@@ -188,7 +188,7 @@ class TeamId:
 
     identifier: ClassVar[str] = "C1"
     organization: Optional[OrganizationCode] = spec(3, 1)
-    code: str = spec(12, 6)
+    team_code: str = spec(12, 6)
     name: str = spec(18, 30)
     abbreviation: Optional[str] = spec(48, 16)
     address_1: Optional[str] = spec(64, 22)
@@ -198,7 +198,33 @@ class TeamId:
     postal_code: Optional[str] = spec(130, 10, t.postal_code)
     country: Optional[str] = spec(140, 3)
     region: Optional[str] = spec(143, 1)
-    code5: Optional[str] = spec(150, 1)
+    team_code5: Optional[str] = spec(150, 1)
+
+
+@model(frozen=True)
+class TeamEntry:
+    """Identify the team coach and the number of entries
+    for the team.
+
+    This record is used to identify the team coach.  When used, one
+    team entry record would be submitted with the C1 team ID record.
+    The USS team code and team coach field are required.  Additional
+    fields provide for the number of individual swimmers, number of
+    splash records, number of relay entries, number of relay name
+    entries and number of split records.
+    """
+
+    identifier: ClassVar[str] = "C2"
+    organization: Optional[OrganizationCode] = spec(3, 1, m2=True)
+    team_code: Optional[str] = spec(12, 6, m2=True)
+    coach_name: Optional[str] = spec(18, 30, m2=True)
+    coach_phone: Optional[str] = spec(48, 12, t.phone)
+    n_entries: Optional[int] = spec(60, 6)
+    n_athletes: Optional[int] = spec(66, 6)
+    n_relay_entries: Optional[int] = spec(72, 5)
+    n_split_records: Optional[int] = spec(83, 6)
+    short_name: Optional[str] = spec(89, 16)
+    team_code5: Optional[str] = spec(150, 1)
 
 
 @model(frozen=True)
