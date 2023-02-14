@@ -1,0 +1,2698 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			      Standard Data Interchange Format
+
+					 Ver. 3.0            
+					(official)
+			   
+
+		
+
+
+
+
+
+
+
+				  April 28, 1998
+
+                      United States Swimming Interchange Format
+				 VERSION 3 DOCUMENT
+
+				  Table of Contents
+
+
+
+
+	  Introduction  . . . . . . . . . . . . . . . . . . . . . . . . . 1
+
+	  Format Design . . . . . . . . . . . . . . . . . . . . . . . . . 2
+
+	  Meet Pyramid  . . . . . . . . . . . . . . . . . . . . . . . . . 5
+
+	  Record Times Pyramid  . . . . . . . . . . . . . . . . . . . . . 7
+
+	  Time Standards Pyramid  . . . . . . . . . . . . . . . . . . . . 7
+
+	  LSC Registration Pyramid  . . . . . . . . . . . . . . . . . . . 8
+
+	  A0 -- File Description Record . . . . . . . . . . . . . . . . . 9
+
+	  B1 -- Meet Record . . . . . . . . . . . . . . . . . . . . . .  10
+
+	  B2 -- Meet Host Record  . . . . . . . . . . . . . . . . . . .  11
+
+	  C1 -- Team Id Record  . . . . . . . . . . . . . . . . . . . .  12
+
+	  C2 -- Team Entry Record . . . . . . . . . . . . . . . . . . .  13
+
+	  D0 -- Individual Event Record . . . . . . . . . . . . . . . .  14
+
+	  D1 -- Individual Administrative Record  . . . . . . . . . . .  17
+
+	  D2 -- Individual Contact Record . . . . . . . . . . . . . . .  19
+
+	  D3 -- Individual Info Record  . . . . . . . . . . . . . . . .  21
+
+	  E0 -- Relay Event Record  . . . . . . . . . . . . . . . . . .  22
+
+	  F0 -- Relay Name Record . . . . . . . . . . . . . . . . . . .  24
+
+	  G0 -- Splits Record . . . . . . . . . . . . . . . . . . . . .  26
+
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998               i                      
+		      United States Swimming Interchange Format
+				   VERSION 3 DOCUMENT
+
+			    Table of Contents (continued)
+
+	  J0 -- Meet Qualifying Times Record  . . . . . . . . . . . . .  28
+
+	  J1 -- National Age Group Times Record . . . . . . . . . . . .  29
+
+	  J2 -- USS Motivational Times Record . . . . . . . . . . . . .  30
+
+	  Z0 -- File Terminator Record  . . . . . . . . . . . . . . . .  31
+
+	  Code Tables . . . . . . . . . . . . . . . . . . . . . . . . .  33
+	       ORG Code 001 . . . . . . . . . . . . . . . . . . . . . .  33
+	       LSC Code 002 . . . . . . . . . . . . . . . . . . . . . .  33
+	       FILE Code 003  . . . . . . . . . . . . . . . . . . . . .  34
+	       COUNTRY Code 004 . . . . . . . . . . . . . . . . . . . .  34
+	       MEET Code 005  . . . . . . . . . . . . . . . . . . . . .  36
+	       TEAM Code 006  . . . . . . . . . . . . . . . . . . . . .  37
+	       REGION Code 007  . . . . . . . . . . . . . . . . . . . .  37
+	       USS# Code 008  . . . . . . . . . . . . . . . . . . . . .  37
+	       CITIZEN Code 009 . . . . . . . . . . . . . . . . . . . .  37
+	       SEX Code 010 . . . . . . . . . . . . . . . . . . . . . .  37
+	       EVENT SEX Code 011 . . . . . . . . . . . . . . . . . . .  37
+	       STROKE Code 012  . . . . . . . . . . . . . . . . . . . .  37            
+	       COURSE Code 013  . . . . . . . . . . . . . . . . . . . .  38
+	       EVENT TIME CLASS Code 014  . . . . . . . . . . . . . . .  38            
+	       SPLIT Code 015 . . . . . . . . . . . . . . . . . . . . .  38
+	       ATTACH Code 016  . . . . . . . . . . . . . . . . . . . .  38
+	       ZONE Code 017  . . . . . . . . . . . . . . . . . . . . .  38
+	       COLOR Code 018 . . . . . . . . . . . . . . . . . . . . .  39
+	       PRELIMS/FINALS Code 019  . . . . . . . . . . . . . . . .  39
+	       TIME Code 020  . . . . . . . . . . . . . . . . . . . . .  39
+	       MEMBER Code 021  . . . . . . . . . . . . . . . . . . . .  39
+	       SEASON Code 022  . . . . . . . . . . . . . . . . . . . .  39
+	       ORDER Code 024 . . . . . . . . . . . . . . . . . . . . .  39
+	       EVENT AGE Code 025 . . . . . . . . . . . . . . . . . . .  40
+	       ETHNICITY Code 026 . . . . . . . . . . . . . . . . . . .  40
+
+	  Coding Examples   . . . . . . . . . . . . . . . . . . . . . .  41
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998               ii                      
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  Revisions List
+	  1.  - Page 2, Revise definition of mandatory fields.
+	  
+	  2.  - Remove all vendor-defined fields. The resulting space  
+		will be for future use.
+
+	  3.  - Remove all "checksum" fields. The resulting space will be 
+		for future use.
+	   
+	  4.  - Add field to A0 record (156/2) "submitted by LSC" for Top 16 
+		tabulation.
+
+	  5.  - Page 19, D0 Record, "EVENT SEX Code 011" (67/1) 
+		make mandatory.
+	       
+	  6.  - Top 16 Pyramid(only) - allow multiple meets.
+
+	  7.  - Page 3, Revise phone number formatting restrictions.
+
+	  8.  - Page 3, Revise Time field format # 3.
+
+	  9.  - Remove H0 record.
+
+	  10. - Page 3, Revise Name field format.
+
+	  11. - Remove "Transaction" field from all records. 
+		The resulting space will be for future use.
+
+	  12. - Page 10, B1 change "meet city" & "meet state" to M2.
+
+	  13. - Page 13, C1 remove mandatory on "Region Code".
+
+	  14. - Change each occurrence of "USS or other ID" to "USS#" and 
+		make M2.
+
+	  15. - Remove any occurrence of "unique Event ID#". The resulting
+		space will be for future use.
+	  
+	  16. - Convert "admin info" fields in D1 to future use.
+
+	  17. - Convert "middle initial" in D1 to future use.
+
+	  18. - Remove "ANSWER Code 023" in all records, make future use.
+
+	  19. - Change to M1: "meet name","meet start" in B1. "TEAM code" 
+			      "full team name" in C1.
+
+	  20. - Change to M2: "date of swim" in D0&E0, "swimmer birth date" 
+			      in D1 & F0, "ORG Code" in all records.  
+
+	  21. - Convert "flight status" in D0 to future use.
+
+	  22. - Prelims & finals place and points are to be M1 for championship meets.        
+	  
+	  April 28, 1998              iii          
+	  1.  - Added a new record (D3) that includes the new USS# and 
+		swimmer's preferred first name.
+
+	  2.  - Revised pyramids to include the D3 record.
+	  
+	  3.  - Added field for SDIF version number to the A0 record at 4/8.
+
+	  4.  - Added definition of new USS# in the format design section.
+	  
+	  5.  - Added condition (#) to the D0 record to allow entry of 
+		relay only swimmers. 
+
+	  6.  - Added definition for file extension (SD3) on page 2 under 
+		format design.
+	 
+	  7.  - Added fields for the submission of registration information
+		to the D3 record.
+
+	  8.  - Added the definition of ETHNICITY Code 026.
+
+	  9.  - Added and defined a LOGICAL field type.
+
+	  10. - Revised definition of Alpha data type to allow right 
+		justification of numeric data.
+
+	  11. - Add back Event Numbers.
+
+	  12. - Change participation selections in the D3 record.
+
+	  13. - Implement new USS# and prefered first name in F0 
+		instead of following F0 with a D3 record.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998              iv
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  Introduction
+
+	  United States Swimming has matured as an organization and
+	  expanded services to individuals and clubs.  To support this
+	  expansion, USS has developed a computer plan. One component is a
+	  standard interchange format for technical data.  Swimming data
+	  must be transmitted among the clubs, Local Swimming Committees
+	  (LSCs), and the USS headquarters office.  Exchanging meet results
+	  is one example, where data from a host club is distributed to
+	  swimmers and clubs using diskettes or modems.  Some LSCs are
+	  compiling swimmer statistics and would retype the data from
+	  printed sheets if electronic transmission were not available. 
+	  A standard format promotes easy exchange of data and the
+	  development of new computer programs and services.  The goal is
+	  to preserve the valuable efforts of our volunteers.
+
+	  To develop this standard, United States Swimming established an
+	  ad-hoc committee to review existing needs and prepare a draft
+	  design.    A representative from US Masters Swimming and a coach
+	  familiar with high school and college swimming requirements
+	  contributed significantly to the final design.  The design is
+	  intended to allow all aquatic sports organizations to use the
+	  same standard.  New records can be added, and new codes or
+	  fields can be added to existing records.
+
+	  The format incorporates a modular design.  Each file would
+	  combine the records into an order that corresponds to the
+	  type of data to be transmitted.  Meet entry records would have a
+	  specific order.  Time standards would have another order.  When
+	  specific record types are not needed, those records can be
+	  omitted.   Certain fields were declared to be "mandatory" for
+	  adequate identification of the data and to preserve unique
+	  identifiers.
+
+
+
+
+
+
+
+
+
+
+	  
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                     1                      
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  Format Design
+
+	  SDI files have a SD3 extension. Example: meetrslt.sd3.
+
+	  The basic design of the USS Interchange Format is a fixed record
+	  length for all records.  Data is grouped together by type of
+	  information, and records are linked to each other by common
+	  fields or by record order.  The records comprise a single type
+	  of information, e.g., one record for meet host data.  The file
+	  structure has an implied order of less frequent data preceding
+	  more frequent data, i.e., one meet, multiple teams, multiple
+	  athletes per team, etc.
+
+	  Each record is one-hundred sixty-two (162) bytes in length, 
+	  with the last two bytes a carriage return and line feed.
+	  Byte 161 is an ASCII 13 and byte 162 is an ASCII 10.  Each 
+	  record has a two byte record identifier.  
+
+	  Coding conventions
+
+	  The first byte of the first record MUST be the first byte of
+	  the file, and MUST begin an A0 record.
+
+	  Fields which are not used should be blank filled.
+
+	  "No blanks" means that there may not be ANY blanks ANYWHERE
+	  in the field;  "non-blank" means that there MAY be blanks in
+	  the field, but there MUST be AT LEAST ONE non-blank character
+	  as well.
+
+	  There are two levels of mandatory fields. M1 - must be 
+	  included for the record to be useful. M2 - an exceptions 
+	  report must be generated for records containing blank M2 fields.
+	  M2 fields are necessary for the records to be processed by 
+	  USS. M1 fields require a non-blank entry.  
+   
+	  All undefined space is named "future use" and MUST be blank
+	  until defined explicitly.
+
+	  The first two bytes of a record are always CONST, and are
+	  case sensitive.
+
+	  All ALPHA fields are left justified* and can contain any
+	  letters, numbers and printable symbols.  Users may elect to have
+	  alphabetic data in upper and lower case or upper case only. *Alpha 
+	  fields containing only numeric data should be right justified.
+
+	  All INT data are stored as ASCII digits and should be right 
+	  justified and blank filled.  
+
+	  All LOGICAL fields must contain a upper case 'T' an upper case
+	  'F' or a blank.
+
+
+
+	  April 28, 1998                     2                      
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  DEC numeric values are also ASCII digits and are right 
+	  justified and blank filled.  An optional decimal may be used if 
+	  fractional values occur.
+
+	  PHONE fields can be formatted in any manner that maintains 
+	  the integrity of the number.
+
+	  All DATE fields have the format MMDDYYYY where MM is the month, 
+	  DD is the day, and YYYY is the year.  If a date is supplied,
+	  it must not have ANY blanks -- zero-fill each portion of the date.
+
+	  CODE fields must match EXACTLY when "table checked", and ARE 
+	  case sensitive.  The user should request new codes if required. 
+	  The term "table checked" refers to the tables in the back of the
+	  SDIF document, not a file supplied by U.S. Swimming.
+
+	  USPS designates U.S. Postal Service state abbreviations and
+	  should be capitalized.  
+
+	  POSTAL CODES may be left or right justified, but should include
+	  leading zeroes where defined (for example: a Vermont ZIP code
+	  of 05452).
+
+	  All TIME fields MUST match one of the following formats:
+	  1) All blanks.
+	  2) Have the format mm:ss.ss where mm is the minutes value and 
+	     ss.ss is the seconds value to hundredths.  The third byte must
+	     be a colon or a blank, and the sixth byte must be a period.
+	     If a blank appears anywhere in this format, everything to the
+	     left must also be blank.
+	  3) TIME Code 020, left-justified and blank-filled.
+
+	      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                     3                    
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  The USSNUM format consists of: date of birth + first 3 letters
+	  of legal first name + middle initial + first 4 letters of last 
+	  name. In the event that there is no middle initial or not enough
+	  letters in the first or last name to fill the field, an asterisk
+	  will be used. Special characters are removed. 
+	  Examples: Catherine A. Durance = 011553CATADURA
+		    Cy V. Young          = 091879CY*VYOUN
+		    Thomas Chu           = 020981THO*CHU*
+		    Ty Lee               = 011873TY**LEE*
+		    Dave T. O'Neil       = 030367DAVTONEI
+
+	  
+	  If a time field is used, then the COURSE/STATUS code field 
+	  immediately following (if present) must be entered also.  When
+	  meets are timed finals only, the swim time should be entered in
+	  the Finals Time field.
+
+	  A NAME type must be in the following format:  last name followed
+	  by a comma and a space, followed by first name and an optional
+	  space and middle initial. Example:  O'Neil, John Q
+		    
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                     4
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  Meet Pyramid
+
+	       A0-File description rec      first record in file, contains
+					    data on the file itself and
+					    identifies the vendor software.
+
+		 B1-Meet rec                one per file, contains data on
+					    type of meet, location, dates
+					    of competition.
+
+		 B2-Meet host rec           one or more per meet, contains
+					    meet host contact information
+
+		    C1-Team ID rec          one per team, contains data on
+					    team name, code, address.
+
+		    C2-Team entry rec       one per team, contains coach
+					    info plus stats on other
+					    records to follow for that team.
+
+		       D0-Ind. event rec    one per splash, contains data
+					    on athlete, event, stroke and
+					    distance, times, places
+					    and lanes.
+		       
+		       D3-Ind. Info rec     one per swimmer, a swimmer with
+					    multiple D0 records will have 
+					    one D3 record following his/her 
+					    first D0 record, contains new 
+					    USS# and preferred first name.
+
+			  G0-Split rec      one or more per "D0", contains
+					    data on athlete name, ID, event
+					    ID, split time and interval.
+
+		       E0-Relay event rec   one per relay entry, contains
+					    data on relay event, team,
+					    times, places and lanes.
+
+		       F0-Relay name rec    four or more per "E0", contains
+					    data on the athlete name, ID,
+					    time, split, and session.
+
+			  G0-Split rec      one or more per "E0"
+
+	       Z0-File terminator rec       one per file, contains 
+					    statistics and text information.
+
+	  April 28, 1998                     5
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  At each indented level, the file may have multiple entries to
+	  transmit the data in a logical sequence.  The order of the
+	  records may vary depending on the user's needs.  Some records
+	  have limited data within the record, such as one submitted for
+	  meet entry.  The same record would have more data added as the
+	  swimmer completes the event.  New records would be added such as
+	  split records.  Relay name records could be edited for a revised
+	  order of swimmers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                     6
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+	  Record Times Pyramid
+
+	  To transmit Top 16 or other record times, the user may submit an
+	  A0 record, one or more D0 records, and a Z0 record.  The D0
+	  records may be followed by G0 split records if needed. For Top 16
+	  only, multiple meets are allowed.
+
+	       A0-File description rec    first record in file, contains
+					  data on the file itself and
+					  identifies the vendor software.
+
+		 D0-Individual Event Rec  one per time achieved, contains
+					  swimmer ID, team, prelims/finals
+					  times.
+
+		 D3-Individual Info Rec   one per time achieved, contains
+					  new USS# and preferred first name.
+
+		   G0-Split rec           one or more per "D0", contains
+					  data on athlete name, ID, event
+					  ID, split time and interval.
+
+	       Z0-File terminator rec     one per file, contains
+					  statistics and text information.
+
+
+	  Time Standards Pyramid
+
+	  To transmit time standards, the user may submit an A0 record, one
+	  or more J0, J1, or J2 records, and a Z0 record.
+
+	       A0-File description rec    first record in file, contains
+					  data on the file itself and
+					  identifies the vendor software.
+
+		 J0-Meet Qual rec         one per event, contains times
+					  for all pool types.
+
+		 J1-NAG Qual rec          one per event and pool type,
+					  contains times for all levels
+					  AAAA through B.
+
+		 J2-Motivation Qual rec   one per event and level, contains
+					  times for SCY and LCM.
+
+	       Z0-File terminator rec     one per file, contains statistics
+					  and text information.
+
+	  
+
+
+
+
+
+
+	  April 28, 1998                     7
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  LSC Registration Pyramid
+
+	  To transmit membership registration data to the LSC, the user may
+	  submit an A0 record, one C1 record, one D1 and one D2 record per
+	  swimmer, and a Z0 record.
+
+	       A0-File description rec            first record in file,
+						  contains data on the file
+						  itself and identifies the
+						  vendor software.
+
+		 C1-TeamID rec                    one per file, contains
+						  data on team name, code,
+						  address.
+
+		   D1-Individ. Admin. rec         one per swimmer, contains
+						  swimmer info
+
+		   D2-Individ. Contact rec        one per swimmer, contains
+						  remaining swimmer info
+
+		   D3-Individ. Info rec           one per swimmer, contains
+						  new USS# and preferred first
+						  name.
+
+	       Z0-File terminator rec             one per file, contains
+						  statistics and text
+						  information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  
+
+
+
+
+
+
+	  April 28, 1998                     8
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  A0 -- File Description Record
+
+	       Purpose:  Identify the file and the type of data to be
+			 transmitted.  Contact person and phone number
+			 included to assist with use of information on the
+			 file.
+
+	  This record is mandatory for each transfer of data within this
+	  file structure.  Each file begins with this record and each file
+	  has only one record of this type.  
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2       M1*   CONST  "A0"
+
+	  3/1       M2*   CODE   ORG Code 001, table checked
+
+	  4/8             ALPHA  SDIF version number (same format as the 
+				 version number from the title page)
+
+	  12/2      M1*   CODE   FILE Code 003, table checked
+
+	  14/30                  future use
+
+	  44/20      *    ALPHA  software name
+
+	  64/10      *    ALPHA  software version
+
+	  74/20     M1*   ALPHA  contact name (person supplying or
+				 sending data)
+
+	  94/12     M1*   PHONE  contact phone (area code and phone
+				 number of contact name in 74/20)
+
+	  106/8     M1*   DATE   file creation or update
+
+	  114/42                 future use
+	  
+	  156/2           ALPHA  submitted by LSC - for Top 16
+
+	  158/3                  future use
+
+
+	  * required field for submission of registration data to LSC
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                     9
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  B1 -- Meet Record
+
+	       Purpose:  Identify the meet name, address, and dates.
+
+	  This record is used to identify the meet name and address.  The
+	  meet name is required, plus the city, state, meet type, start
+	  and end dates.  Additional fields provide for the street address,
+	  postal code and country code.  Each file may only have one
+	  record of this type.
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1     CONST  "B1"
+
+	  3/1      M2     CODE   ORG Code 001, table checked
+
+	  4/8                    future use
+
+	  12/30    M1     ALPHA  meet name
+
+	  42/22           ALPHA  meet address line one
+
+	  64/22           ALPHA  meet address line two
+
+	  86/20    M2     ALPHA  meet city
+
+	  106/2    M2     USPS   meet state
+
+	  108/10          ALPHA  Postal Code, meet zip or foreign code
+
+	  118/3           CODE   COUNTRY Code 004, table checked
+
+	  121/1    M2     CODE   MEET Code 005, table checked
+
+	  122/8    M1     DATE   meet start
+
+	  130/8    M2     DATE   meet end
+
+	  138/4           INT    altitude of pool in feet above sea level
+
+	  142/8                  future use
+
+	  150/1           CODE   COURSE Code 013, table checked, default
+				 course set up in exporting software
+
+	  151/10                 future use
+
+
+
+	  
+
+
+
+	  April 28, 1998                    10
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  B2 -- Meet Host Record
+
+	       Purpose:  Identify the meet host or hosts, and host address.
+
+	  This record is used to identify the meet host or hosts and the
+	  host address.  The meet host name is required.  Additional
+	  fields provide for the street address, city, state, postal code,
+	  country code and phone number.
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1     CONST  "B2"
+
+	  3/1      M2     CODE   ORG Code 001, table checked
+
+	  4/8                    future use
+
+	  12/30    M2     ALPHA  meet host name
+
+	  42/22           ALPHA  meet address line one
+
+	  64/22           ALPHA  meet address line two
+
+	  86/20           ALPHA  meet city
+
+	  106/2           USPS   meet state
+
+	  108/10          ALPHA  Postal Code, meet zip or foreign code
+
+	  118/3           CODE   COUNTRY Code 004, table checked
+
+	  121/12          PHONE  meet host phone
+
+	  133/28                 future use
+
+	  
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    11
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  C1 -- Team Id Record
+
+	       Purpose:  Identify the team name, code and address.  Region
+			 code defines USS region for team.
+
+	  This record is used to identify the team name, team code, plus
+	  region.  When used, more than one team record can be transmitted
+	  for a single meet.  The team name, USS team code and team
+	  abbreviation are required.  The USS region code is also required.
+	  Additional fields provide for the street address, city, state,
+	  postal code, and country code.
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1     CONST  "C1"
+
+	  3/1      M2     CODE   ORG Code 001, table checked
+
+	  4/8                    future use
+
+	  12/6     M1     CODE   TEAM Code 006
+
+	  18/30    M1     ALPHA  full team name
+
+	  48/16           ALPHA  abbreviated team name
+
+	  64/22           ALPHA  team address line one
+
+	  86/22           ALPHA  team address line two
+
+	  108/20          ALPHA  team city
+
+	  128/2           USPS   team state
+
+	  130/10          ALPHA  Postal Code, team zip or foreign code
+
+	  140/3           CODE   COUNTRY Code 004, table checked
+
+	  143/1           CODE   REGION Code 007, table checked
+
+	  144/6                  future use
+
+	  150/1           ALPHA  optional 5th char of team code
+
+	  151/10                  future use
+
+
+
+	  
+
+
+
+
+	  April 28, 1998                    12
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  C2 -- Team Entry Record
+
+	       Purpose:  Identify the team coach and the number of entries
+			 for the team.
+
+	  This record is used to identify the team coach.  When used, one
+	  team entry record would be submitted with the C1 team ID record.
+	  The USS team code and team coach field are required.  Additional
+	  fields provide for the number of individual swimmers, number of
+	  splash records, number of relay entries, number of relay name
+	  entries and number of split records.
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1     CONST  "C2"
+
+	  3/1      M2     CODE   ORG Code 001, table checked
+
+	  4/8                    future use
+
+	  12/6     M2     CODE   TEAM Code 006
+
+	  18/30    M2     ALPHA  coach name
+
+	  48/12           PHONE  coach phone
+
+	  60/6            INT    number of entries (from this team) in the
+				 individual events, corresponds to number of
+				 D0 records
+
+	  66/6            INT    number of different athletes on team
+
+	  72/5            INT    number of entries (from this team) in the
+				 relay events, corresponds to number of E0
+				 records
+
+	  77/6            INT    number of relay swimmer entries (from this
+				 team), corresponds to number of F0 records
+
+	  83/6            INT    number of split records (from this team)
+				 in relay and individual events, corresponds
+				 to number of G0 records
+	  
+	  89/16           ALPHA  short team name for display purposes
+
+	  105/45                 future use
+
+	  150/1           ALPHA  optional 5th char of team code
+
+	  151/10                 future use
+
+	  
+
+	  April 28, 1998                    13
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  D0 -- Individual Event Record
+
+	       Purpose:  Identify the athlete by name, registration number,
+			 birth date and gender.  Identify the stroke,
+			 distance, event number and time of the swims.
+
+	  This record is used to identify the athlete and the individual
+	  event.  When used, one individual event record would be
+	  submitted for each swimmer entered in an individual event.  The
+	  athlete name, USS registration number, birth date and gender
+	  code are required.  Fields for the stroke, distance, event
+	  number, age range, and date of swim are also required.
+	  Additional fields provide for the citizenship, age or class, 
+	  seed time, prelim time, swim off time, finals time and pool
+	  lanes used in competition.
+
+	  NOTE:  Individual event records must be preceded by at least one
+	  C1 team ID record and one C2 team entry record.  If these two 
+	  records are missing, the individual is assumed to be attached
+	  to the previous "team" that has proper coding.  Athlete
+	  registration data is not available to meet management programs
+	  and proper coding is essential.
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1     CONST  "D0"
+
+	  3/1      M2     CODE   ORG Code 001, table checked
+
+	  4/8                    future use
+
+	  12/28    M1     NAME   swimmer name 
+
+	  40/12    M2     ALPHA  USS#
+
+	  52/1            CODE   ATTACH Code 016, table checked
+
+	  53/3            CODE   CITIZEN Code 009, table checked
+
+	  56/8     M2     DATE   swimmer birth date
+
+	  64/2            ALPHA  swimmer age or class (such as Jr or Sr)
+	  
+	  
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    14
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  66/1     M1     CODE   SEX Code 010, table checked
+
+	  67/1     M1#    CODE   EVENT SEX Code 011, table checked
+
+	  68/4     M1#    INT    event distance
+
+	  72/1     M1#    CODE   STROKE Code 012, table checked
+
+	  73/4            ALPHA  Event Number
+
+	  77/4     M1#    CODE   EVENT AGE Code 025, table checked
+
+	  81/8     M2     DATE   date of swim
+
+	  89/8            TIME   seed time
+
+	  97/1      *     CODE   COURSE Code 013, table checked
+
+	  98/8            TIME   prelim time
+
+	  106/1     *     CODE   COURSE Code 013, table checked
+
+	  107/8           TIME   swim-off time
+
+	  115/1     *     CODE   COURSE Code 013, table checked
+
+	  116/8           TIME   finals time
+
+	  124/1     *     CODE   COURSE Code 013, table checked
+
+	  125/2           INT    prelim heat number
+
+	  127/2           INT    prelim lane number
+
+	  129/2           INT    finals heat number
+
+	  131/2           INT    finals lane number
+
+	  133/3     **    INT    prelim place ranking
+	  
+	  
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    15
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  136/3     **    INT    finals place ranking
+
+	  139/4     **    DEC    points scored from finals
+
+	  143/2           CODE   EVENT TIME CLASS Code 014, table checked
+
+	  145/1           ALPHA  flight status of swimmer (subdivision
+				 of Time Standard)
+
+	  146/15                 future use
+	  
+	  
+	  *  This field is mandatory IF the immediately preceding time
+	     field is NOT blank
+	  
+	  ** This field is mandatory (M1) if a championship meet 
+	     (MEET Code 005 - 6,7)         
+
+	  #  Event age code 025, event sex code 011, event distance, 
+	     stroke code 012 and seed time are not mandatory (M1) 
+	     for relay only swimmers.          
+
+	  Note - An additional record type will be used for open water
+		  swimming.  Multiple swim offs require multiple records.
+
+
+
+
+
+
+
+
+
+
+
+
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  April 28, 1998                    16
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  D1 -- Individual Administrative Record
+
+	       Purpose:  Identify the athlete by name, registration number,
+			 birth date and gender.  Identify other
+			 administrative information.
+
+	  This record is used to identify the athlete and his/her
+	  administrative information. When used, one individual
+	  administrative record would be submitted for each swimmer in
+	  the file.  The athlete name, USS registration number, birth
+	  date and gender code are required.
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1*    CONST  "D1"
+
+	  3/1      M2*    CODE   ORG Code 001, table checked
+
+	  4/8                    future use
+
+	  12/6       *    CODE   TEAM Code 006
+
+	  18/1            ALPHA  optional 5th char of team code
+
+	  19/28    M1*    NAME   swimmer name 
+
+	  47/1                   future use
+
+	  48/12    M2*    ALPHA  USS#
+
+	  60/1            CODE   ATTACH Code 016, table checked
+
+	  61/3       *    CODE   CITIZEN Code 009, table checked
+
+	  64/8     M2*    DATE   swimmer birth date
+
+	  72/2            ALPHA  swimmer age or class (such as Jr or Sr)
+
+	  74/1     M1*    CODE   SEX Code 010, table checked
+
+	  75/30            ALPHA  first admin info field
+
+	  
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    17
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  105/20     *    ALPHA  fourth admin info field, used in submission
+				 of registration data for old member number
+				 if inits or birthdate change
+
+	  125/12     *    PHONE  first phone number for swimmer
+
+	  137/12          PHONE  second phone number for swimmer
+
+	  149/8      *    DATE   date swimmer registered with USS
+
+	  157/1      *    CODE   MEMBER Code 021, table checked
+
+	  158/3                  future use
+
+
+	  * required field for submission of registration data to LSC
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    18
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  D2 -- Individual Contact Record
+
+	       Purpose:  Identify the athlete by name.  Identify mailing
+			 and contact information.
+
+	  This record is used to identify the athlete and his/her contact
+	  information. When used, one individual contact record would be
+	  submitted for each swimmer in the file.  The athlete name is
+	  required.  
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1*    CONST  "D2"
+
+	  3/1      M2*    CODE   ORG Code 001, table checked
+
+	  4/8                    future use
+
+	  12/6       *    CODE   TEAM Code 006
+
+	  18/1            ALPHA  optional 5th char of team code
+
+	  19/28    M1*    NAME   swimmer name
+
+	  47/30           ALPHA  alternate mailing name
+
+	  77/30      *    ALPHA  mailing address (street)
+
+	  107/20     *    ALPHA  mailing city
+
+	  127/2      *    USPS   mailing state
+
+	  129/12          ALPHA  mailing country
+
+	  141/10     *    ALPHA  Postal Code, zip or foreign code
+
+	  151/3           CODE   COUNTRY Code 004, table checked
+
+	  154/1           CODE   REGION Code 007, table checked
+
+	  155/1      *    CODE   ANSWER Code 023, Is swimmer also a member
+				 of another FINA federation?
+	  
+	  
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    19
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  156/1      *    CODE   SEASON Code 022, table checked, show which
+				 season swimmer is registered for
+
+	  157/4                  future use
+	  * required field for submission of registration data to LSC
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  April 28, 1998                    20          
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+	  
+	  D3 -- Individual Information Record
+
+	       Purpose: Contains additional information that is not 
+			included in pre version 3 SDI formats.
+	  
+	  This record provides space for the new USS# as well as the 
+	  swimmers preferred first name. For meet files this record will 
+	  follow the D0 record and the F0 record if relays are included.
+	  A swimmer with multiple D0 records will have one D3 record 
+	  following his/her first D0 record.
+
+	  start/
+	  length   Mand   Type    Description
+	 ---------------------------------------------------------------- 
+	  1/2      M1     CONST   "D3"
+	  
+	  3/14     M2     USSNUM  USS# (new)
+
+	  17/15           ALPHA   preferred first name
+     
+	  32/2      *     CODE    ethnicity code 026
+	  
+	  34/1      *     LOGICAL Junior High School                
+	  
+	  35/1      *     LOGICAL Senior High School
+	  
+	  36/1      *     LOGICAL YMCA/YWCA
+	  
+	  37/1      *     LOGICAL College
+	  
+	  38/1      *     LOGICAL Summer Swim League
+	  
+	  39/1      *     LOGICAL Masters
+	  
+	  40/1      *     LOGICAL Disabled Sports Organizations
+	  
+	  41/1      *     LOGICAL Water Polo
+	  
+	  42/1      *     LOGICAL None
+	  
+	  43/118                  future use
+
+	  * Required for submission of registration data to an LSC
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    21
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  E0 -- Relay Event Record
+
+	       Purpose:  Identify the relay team by name, USS team code,
+			 and gender.  Identify the stroke, distance, event
+			 number, date and time of the swims.
+
+	  This record is used to identify the team and the relay event.
+	  When used, one relay event record would be submitted for each
+	  relay squad entered in a relay event.  The relay team name, USS
+	  team code, and gender code are required.  Fields for the stroke,
+	  distance, event number, age range, and date of swim, are also
+	  required.  Additional fields provide for the age or class, seed
+	  time, prelim time, swim off time, finals time, and pool lanes
+	  used in competition.
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1     CONST  "E0"
+
+	  3/1      M2     CODE   ORG Code 001, table checked
+
+	  4/8                    future use
+
+	  12/1     M1     ALPHA  relay team name:  one alpha char to
+				 concatenate with the abbreviated team
+				 name (48/16) in record C1 -- creates such
+				 names as "Dolphins A"
+
+	  13/6     M1     CODE   TEAM Code 006
+
+	  19/2            INT    number of F0 relay name records to follow
+
+	  21/1     M1     CODE   EVENT SEX Code 011, table checked
+
+	  22/4     M1     INT    distance of relay
+
+	  26/1     M1     CODE   STROKE Code 012, table checked
+
+	  27/4            ALPHA  Event Number
+
+	  31/4     M1     CODE   EVENT AGE Code 025, table checked
+	  
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    22
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  35/3            INT    total age of all athletes in this event
+
+	  38/8     M2     DATE   date of swim
+
+	  46/8            TIME   seed time
+
+	  54/1      *     CODE   COURSE Code 013, table checked
+
+	  55/8            TIME   prelim time
+
+	  63/1      *     CODE   COURSE Code 013, table checked
+
+	  64/8            TIME   swim-off time
+
+	  72/1      *     CODE   COURSE Code 013, table checked
+
+	  73/8            TIME   finals time
+
+	  81/1      *     CODE   COURSE Code 013, table checked
+
+	  82/2            INT    prelim heat number
+
+	  84/2            INT    prelim lane number
+
+	  86/2            INT    finals heat number
+
+	  88/2            INT    finals lane number
+
+	  90/3      **    INT    prelim place ranking
+
+	  93/3      **    INT    finals place ranking
+
+	  96/4      **    DEC    points scored from finals
+
+	  100/2           CODE   EVENT TIME CLASS Code 014, table checked
+
+	  103/59                 future use
+	  
+	  *  This field is mandatory IF the immediately preceding time
+	     field is NOT blank
+	  
+	  ** This field is mandatory (M1) if a championship meet 
+	     (MEET Code 005 - 6,7)
+
+	  
+
+
+
+
+
+
+	  April 28, 1998                    23
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  F0 -- Relay Name Record
+
+	       Purpose:  Identify the athletes on a relay team by name, USS
+			 registration number, birth date and gender.
+			 Identify the stroke, distance, event number, date,
+			 session and time of the swims.
+
+	  This record is used to identify the athletes on a relay team and
+	  the relay order.  When used, one relay name record is submitted
+	  for each relay athlete entered in a relay event.  Alternates may
+	  be listed on additional records as an optional method of using
+	  this record.  The relay team name, USS team code, and gender
+	  code are required.  The Event ID # field (12/4) is required to
+	  properly identify the relay team to an event and to further link
+	  the splits for a relay athlete.  Fields for the stroke, distance,
+	  event number, age or class, and date of swim, are also required.
+	  Additional fields provide for the seed time, prelim time, swim
+	  off time, finals time, and pool lanes used in competition.
+
+	  NOTE:  Relay name records must be preceded by at least one E0
+	  relay event record.  If this record is missing, the athlete on a 
+	  relay team cannot be attached to the proper relay squad.
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1     CONST  "F0"
+
+	  3/1      M2     CODE   ORG Code 001, table checked
+
+	  4/12                   future use
+	  
+	  16/6     M1     CODE   TEAM Code 006
+
+	  22/1     M1#    ALPHA  relay team name:  one alpha char to
+				 concatenate with the team abbreviation in
+				 record C1 -- creates such names as
+				 "Dolphins A"
+
+	  23/28    M1     NAME   swimmer name
+	  
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    24
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  51/12    M2     ALPHA  USS#
+
+	  63/3            CODE   CITIZEN Code 009, table checked
+
+	  66/8     M2     DATE   swimmer's birth date
+
+	  74/2            ALPHA  swimmer age or class (such as Jr or Sr)
+
+	  76/1     M1     CODE   SEX Code 010, table checked
+
+	  77/1     M1     CODE   ORDER Code 024, prelim leg, table checked
+
+	  78/1     M1     CODE   ORDER Code 024, swim-off leg, table checked
+
+	  79/1     M1     CODE   ORDER Code 024, finals leg, table checked
+
+	  80/8            TIME   leg time
+
+	  88/1      *     CODE   COURSE Code 013, table checked
+
+	  89/4            DEC    automatic take-off time in seconds and
+				 hundredths (s.ss)
+
+	  93/14    M2     USSNUM USS# (new)
+
+	  107/15          ALPHA  preferred first name
+	  
+	  122/39                 future use
+
+	  # If the record is being sent for meet registration and team has
+	    not been finalized, this is NOT mandatory
+
+	  * This field is mandatory IF the immediately preceding time
+	    field is NOT blank
+
+
+
+
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    25
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  G0 -- Splits Record
+
+	       Purpose:  Identify the athletes in an event by name and USS
+			 registration number.  Identify the split distance,
+			 number of splits and the split times of the swims.
+
+	  This record is used to identify the athletes in an event and the
+	  split times.  When used, one splits record would be submitted for
+	  each event that an athlete entered in a meet.  The athlete name,
+	  USS registration code, and split distance are required.    
+	  A split type code is required to identify the split
+	  as an interval or cumulative time.  Ten time fields are provided
+	  to record the splits, and multiple records may be used to
+	  complete all splits for a long-distance event.
+
+	  NOTE:  Splits records must be preceded by at least one D0 
+	  individual event record or one F0 relay name record.  If this 
+	  record is missing, there is no way to connect the splits with
+	  the swim.
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1     CONST  "G0"
+
+	  3/1      M2     CODE   ORG Code 001, table checked
+
+	  4/12                   future use
+
+	  16/28           NAME   swimmer name.  If name is not available,
+				 enter "NO SWIMMER NAME" or some other
+				 meaningful string
+
+	  44/12           ALPHA  USS#
+
+	  56/1     M1     INT    sequence number to order multiple splits
+				 records for one athlete and one event
+
+	  57/2     M1     INT    total number of splits for this event,
+	  
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    26
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  59/4     M1     INT    split distance
+
+	  63/1     M1     CODE   SPLIT Code 015, table checked
+
+	  64/8            TIME   split time
+
+	  72/8            TIME   split time
+
+	  80/8            TIME   split time
+
+	  88/8            TIME   split time
+
+	  96/8            TIME   split time
+
+	  104/8           TIME   split time
+
+	  112/8           TIME   split time
+
+	  120/8           TIME   split time
+
+	  128/8           TIME   split time
+
+	  136/8           TIME   split time
+
+	  144/1           CODE   PRELIMS/FINALS Code 019, table checked
+
+	  145/16                 future use
+
+	  
+
+
+
+
+
+
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    27
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  J0 -- Meet Qualifying Times Record
+
+	       Purpose:  Identify the qualifying times for each event of a
+			 meet.
+
+	  This record is used to identify qualifying times for each event.
+	  When used, one meet qualifying times record would be submitted
+	  for each event in the meet.  The first six fields are mandatory.
+	  At least one time and the age range are also required.  Fields
+	  for the zone, meet and LSC codes are also provided.
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1     CONST  "J0"
+
+	  3/8      M1     DATE   date on which times become effective
+
+	  11/1     M1     CODE   MEET Code 005, table checked
+
+	  12/5                   future use
+
+	  17/1     M1     CODE   EVENT SEX Code 011, table checked
+
+	  18/4     M1     INT    distance of event
+
+	  22/1     M1     CODE   STROKE Code 012, table checked
+
+	  23/8            TIME   for short course yards
+
+	  31/8            TIME   for short course meters
+
+	  39/8            TIME   for long course meters
+
+	  47/4     M1     CODE   EVENT AGE Code 025, table checked
+
+	  51/1            CODE   ZONE Code 017, table checked
+
+	  52/2            CODE   REGION Code 007, table checked
+
+	  54/2            CODE   LSC Code 002, table checked
+
+	  56/105                 future use
+	  
+	  
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    28
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  J1 -- National Age Group Times Record
+
+	       Purpose:  Identify the qualifying times for national age
+			 group records.
+
+	  This record is used to identify qualifying times for national
+	  age group records.  When used, one NAG qualifying times record
+	  would be submitted for each event, age group and course
+	  combination.  The first seven fields are mandatory.  At least
+	  one time is also required.
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1     CONST  "J1"
+
+	  3/8      M1     DATE   date on which times become effective
+
+	  11/1     M1     CODE   EVENT SEX Code 011, table checked
+
+	  12/4     M1     INT    distance of event
+
+	  16/1     M1     CODE   STROKE Code 012, table checked
+
+	  17/4     M1     CODE   EVENT AGE Code 025, table checked
+
+	  21/1     M1     CODE   COURSE Code 013, table checked
+
+	  22/8            TIME   BB time
+
+	  30/8            TIME   B time
+
+	  38/8            TIME   A time
+
+	  46/8            TIME   AA time
+
+	  54/8            TIME   AAA time
+
+	  62/8            TIME   AAAA time
+
+	  70/91           future use
+
+
+	  
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    29
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  J2 -- USS Motivational Times Record
+
+	       Purpose:  Identify the qualifying times for national age
+			 group records.
+
+	  This record is used to identify qualifying times for USS
+	  motivational programs.  When used, one USS motivational times
+	  record is submitted for each event.  The first five fields are
+	  mandatory.  When this record is used, at least one time is
+	  also required.
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1     CONST  "J2"
+
+	  3/1      M1     CODE   EVENT SEX Code 011, table checked
+
+	  4/4      M1     INT    distance of event
+
+	  8/1      M1     CODE   STROKE Code 012, table checked
+
+	  9/4      M1     CODE   COLOR Code 018, table checked
+
+	  13/8            TIME   short course yards level 1
+
+	  21/8            TIME   short course yards level 2
+
+	  29/8            TIME   short course yards level 3
+
+	  37/8            TIME   long course meters level 1
+
+	  45/8            TIME   long course meters level 2
+
+	  53/8            TIME   long course meters level 3
+
+	  61/8     M1     DATE   date on which times become effective
+
+	  69/92                  future use
+
+
+
+
+	  
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    30
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  Z0 -- File Terminator Record
+
+	       Purpose:  Identify the logical end of file for a file
+			 transmission.  Record statistics and swim
+			 statistics are listed for convenience.
+
+	  This record is mandatory in each file.  Each file ends with this
+	  record and each file has only one record of this type.  The first
+	  four fields are mandatory.  Additional fields provide for text
+	  and record counts.
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  1/2      M1     CONST  "Z0"
+
+	  3/1      M2     CODE   ORG Code 001, table checked
+
+	  4/8                    future use
+
+	  12/2     M1     CODE   FILE Code 003, table checked
+
+	  14/30           ALPHA  notes (additional file info)
+
+	  44/3            INT    number of B records
+
+	  47/3            INT    number of different meets
+
+	  50/4            INT    number of C records
+
+	  54/4            INT    number of different teams
+
+	  58/6            INT    number of D records
+
+	  64/6            INT    number of different swimmers
+
+	  70/5            INT    number of E records
+
+	  75/6            INT    number of F records
+
+	  81/6            INT    number of G records
+
+	  87/5            INT    batch number
+	  
+	  
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    31
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  start/   
+	  length   Mand   Type   Description
+	 ----------------------------------------------------------------
+	  92/3            INT    number of new members
+
+	  95/3            INT    number of renew members
+
+	  98/3            INT    number of member changes
+
+	  101/3           INT    number of member deletes
+
+	  104/57                 future use
+
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    32
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+				     Code Tables
+
+	  ORG Code 001      Organization code
+	       1    USS                        6    NCAA Div III
+	       2    Masters                    7    YMCA
+	       3    NCAA                       8    FINA
+	       4    NCAA Div I                 9    High School
+	       5    NCAA Div II
+
+	  LSC Code 002      Local Swimming Committee code
+	       AD   Adirondack                 MV    Missouri Valley
+	       AK   Alaska                     MW    Midwestern
+	       AM   Allegheny Mountain         NC    North Carolina
+	       AR   Arkansas                   ND    North Dakota
+	       AZ   Arizona                    NE    New England
+	       BD   Border                     NI    Niagara
+	       CA   Southern California        NJ    New Jersey
+	       CC   Central California         NM    New Mexico
+	       CO   Colorado                   NT    North Texas
+	       CT   Connecticut                OH    Ohio
+	       FG   Florida Gold Coast         OK    Oklahoma
+	       FL   Florida                    OR    Oregon
+	       GA   Georgia                    OZ    Ozark
+	       GU   Gulf                       PC    Pacific
+	       HI   Hawaii                     PN    Pacific Northwest
+	       IA   Iowa                       PV    Potomac Valley
+	       IE   Inland Empire              SC    South Carolina
+	       IL   Illinois                   SD    South Dakota
+	       IN   Indiana                    SE    Southeastern
+	       KY   Kentucky                   SI    San Diego Imperial
+	       LA   Louisiana                  SN    Sierra Nevada
+	       LE   Lake Erie                  SR    Snake River
+	       MA   Middle Atlantic            ST    South Texas
+	       MD   Maryland                   UT    Utah
+	       ME   Maine                      VA    Virginia
+	       MI   Michigan                   WI    Wisconsin
+	       MN   Minnesota                  WT    West Texas
+	       MR   Metropolitan               WV    West Virginia
+	       MS   Mississippi                WY    Wyoming
+	       MT   Montana
+
+
+
+
+	  
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    33
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  FILE Code 003     File/Transmission Type code
+	       01   Meet Registrations
+	       02   Meet Results
+	       03   OVC
+	       04   National Age Group Record
+	       05   LSC Age Group Record
+	       06   LSC Motivational List
+	       07   National Records and Rankings
+	       08   Team Selection
+	       09   LSC Best Times
+	       10   USS Registration
+	       16   Top 16
+	       20   Vendor-defined code
+
+	  COUNTRY Code 004    FINA Country code (effective 1993)
+
+	       AFG  Afghanistan                BRN   Bahrain    
+	       AHO  Antilles Netherlands       BRU   Brunei   
+		    (Dutch West Indies)        BUL   Bulgaria    
+	       ALB  Albania                    BUR   Burkina Faso
+	       ALG  Algeria                    CAF   Central African
+	       AND  Andorra                          Republic
+	       ANG  Angola                     CAN   Canada
+	       ANT  Antigua                    CAY   Cayman Islands
+	       ARG  Argentina                  CGO   People's Rep. of Congo
+	       ARM  Armenia                    CHA   Chad    
+	       ARU  Aruba                      CHI   Chile              
+	       ASA  American Samoa             CHN   People's Rep. of China
+	       AUS  Australia                  CIV   Ivory Coast           
+	       AUT  Austria                    CMR   Cameroon    
+	       AZE  Azerbaijan                 COK   Cook Islands
+	       BAH  Bahamas                    COL   Columbia
+	       BAN  Bangladesh                 CRC   Costa Rica
+	       BAR  Barbados                   CRO   Croatia
+	       BEL  Belgium                    CUB   Cuba    
+	       BEN  Benin                      CYP   Cyprus
+	       BER  Bermuda                    DEN   Denmark
+	       BHU  Bhutan                     DJI   Djibouti
+	       BIZ  Belize                     DOM   Dominican Republic
+	       BLS  Belarus                    ECU   Ecuador
+	       BOL  Bolivia                    EGY   Arab Republic of Egypt
+	       BOT  Botswana                   ESA   El Salvador      
+	       BRA  Brazil                     ESP   Spain
+	  
+	  
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    34
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  COUNTRY Code 004    Country code (continued)
+
+	       EST   Estonia                   LAO   Laos
+	       ETH   Ethiopia                  LAT   Latvia
+	       FIJ   Fiji                      LBA   Libya
+	       FIN   Finland                   LBR   Liberia
+	       FRA   France                    LES   Lesotho
+	       GAB   Gabon                     LIB   Lebanon
+	       GAM   Gambia                    LIE   Liechtenstein
+	       GBR   Great Britain             LIT   Lithuania
+	       GER   Germany                   LUX   Luxembourg
+	       GEO   Georgia                   MAD   Madagascar
+	       GEQ   Equatorial Guinea         MAS   Malaysia
+	       GHA   Ghana                     MAR   Morocco
+	       GRE   Greece                    MAW   Malawi
+	       GRN   Grenada                   MDV   Maldives
+	       GUA   Guatemala                 MEX   Mexico
+	       GUI   Guinea                    MGL   Mongolia
+	       GUM   Guam                      MLD   Moldova
+	       GUY   Guyana                    MLI   Mali
+	       HAI   Haiti                     MLT   Malta
+	       HKG   Hong Kong                 MON   Monaco
+	       HON   Honduras                  MOZ   Mozambique
+	       HUN   Hungary                   MRI   Mauritius
+	       INA   Indonesia                 MTN   Mauritania
+	       IND   India                     MYA   Union of Myanmar
+	       IRL   Ireland                   NAM   Namibia
+	       IRI   Islamic Rep. of Iran      NCA   Nicaragua   
+	       IRQ   Iraq                      NED   The Netherlands
+	       ISL   Iceland                   NEP   Nepal   
+	       ISR   Israel                    NIG   Niger 
+	       ISV   Virgin Islands            NGR   Nigeria 
+	       ITA   Italy                     NOR   Norway
+	       IVB   British Virgin Islands    NZL   New Zealand
+	       JAM   Jamaica                   OMA   Oman                 
+	       JOR   Jordan                    PAK   Pakistan
+	       JPN   Japan                     PAN   Panama  
+	       KEN   Kenya                     PAR   Paraguay            
+	       KGZ   Kyrghyzstan               PER   Peru            
+	       KOR   Korea (South)             PHI   Philippines
+	       KSA   Saudi Arabia              PNG   Papau-New Guinea
+	       KUW   Kuwait                    POL   Poland 
+	       KZK   Kazakhstan                POR   Portugal    
+	  
+	  
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    35
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  COUNTRY Code 004    Country code (continued)
+
+	       PRK   Democratic People's       SWE   Sweden
+		     Rep. of Korea             SWZ   Swaziland
+	       PUR   Puerto Rico               SYR   Syria
+	       QAT   Qatar                     TAN   Tanzania
+	       ROM   Romania                   TCH   Czechoslovakia
+	       RSA   South Africa              TGA   Tonga
+	       RUS   Russia                    THA   Thailand
+	       RWA   Rwanda                    TJK   Tadjikistan
+	       SAM   Western Samoa             TOG   Togo
+	       SEN   Senegal                   TPE   Chinese Taipei
+	       SEY   Seychelles                TRI   Trinidad & Tobago
+	       SIN   Singapore                 TUN   Tunisia
+	       SLE   Sierra Leone              TUR   Turkey
+	       SLO   Slovenia                  UAE   United Arab Emirates
+	       SMR   San Marino                UGA   Uganda
+	       SOL   Solomon Islands           UKR   Ukraine
+	       SOM   Somalia                   URU   Uruguay
+	       SRI   Sri Lanka                 USA   United States of
+	       SUD   Sudan                           America
+	       SUI   Switzerland               VAN   Vanuatu
+	       SUR   Surinam                   VEN   Venezuela
+					       VIE   Vietnam
+					       VIN   St. Vincent and the
+						     Grenadines
+					       YEM   Yemen
+					       YUG   Yugoslavia
+					       ZAI   Zaire
+					       ZAM   Zambia
+					       ZIM   Zimbabwe
+      
+
+	  MEET Code 005     Meet Type code
+	       1    Invitational               8    Seniors
+	       2    Regional                   9    Dual
+	       3    LSC Championship           0    Time Trials
+	       4    Zone                       A    International
+	       5    Zone Championship          B    Open
+	       6    National Championship      C    League
+	       7    Juniors
+
+				   
+	  
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    36
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  TEAM Code 006     LSC and Team code
+	       Supplied from USS Headquarters files upon request.
+	       Concatenation of two-character LSC code and four-character
+	       Team code, in that order (e.g., Colorado's FAST would be
+	       COFAST).  The code for Unattached should always be UN, and
+	       not any other abbreviation.  (Florida Gold's unattached
+	       would be FG  UN.)
+
+	  REGION Code 007   Region code
+	       1    Region 1                8    Region 8
+	       2    Region 2                9    Region 9
+	       3    Region 3                A    Region 10
+	       4    Region 4                B    Region 11
+	       5    Region 5                C    Region 12
+	       6    Region 6                D    Region 13
+	       7    Region 7                E    Region 14
+
+	  USS# Code 008     USS member number code
+	       Refer to USS membership files.  These will not be published.
+
+	  CITIZEN Code 009  Citizenship code
+	       2AL  Dual:  USA and other country
+	       FGN  Foreign
+	       All codes in COUNTRY Code 004
+
+	  SEX Code 010      Swimmer Sex code
+	       M    Male
+	       F    Female
+
+	  EVENT SEX Code 011 Sex of Event code
+	       M    Male
+	       F    Female
+	       X    Mixed
+
+	  STROKE Code 012   Event Stroke code
+	       1    Freestyle
+	       2    Backstroke
+	       3    Breaststroke
+	       4    Butterfly
+	       5    Individual Medley
+	       6    Freestyle Relay
+	       7    Medley Relay
+
+	  
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    37
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  COURSE Code 013   Course/Status code
+	       Please note that there are alternatives for the three types
+	       of pools.  The alpha characters make the file more readable.
+	       Either may be used.
+	       1 or S   Short Course Meters
+	       2 or Y   Short Course Yards
+	       3 or L   Long Course Meters
+	       X        Disqualified
+
+	  EVENT TIME CLASS Code 014  Event Time Class code
+	       The following characters are concatenated to form a 2-byte
+	       code for the event time class.  The first character
+	       indicates the lower limit; the second character indicates
+	       the upper limit.  22 indicates B meets, 23 indicates B-A
+	       meets, and 4O indicates AA+ meets.
+	       U    no lower limit (left character only)
+	       O    no upper limit (right character only)
+	       1    Novice times
+	       2    B standard times
+	       P    BB standard times
+	       3    A standard times
+	       4    AA standard times
+	       5    AAA standard times
+	       6    AAAA standard times
+	       J    Junior standard times
+	       S    Senior standard times
+
+
+	  SPLIT Code 015   Split code
+	       C    Cumulative splits supplied
+	       I    Interval splits supplied
+
+	  ATTACH Code 016   Attached code
+	       A    Swimmer is attached to team
+	       U    Swimmer is swimming unattached
+
+	  ZONE Code 017    Zone code
+	       E    Eastern Zone
+	       S    Southern Zone
+	       C    Central Zone
+	       W    Western Zone
+
+
+	  
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                    38
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  COLOR Code 018    Color code
+	       GOLD Gold
+	       SILV Silver
+	       BRNZ Bronze
+	       BLUE Blue
+	       RED  Red (note that fourth character is a space)
+	       WHIT White
+
+	  PRELIMS/FINALS Code 019   Prelims/Finals code
+		    P         Prelims
+		    F         Finals
+		    S         Swim-offs
+
+	  TIME Code 020     Time explanation code
+	       NT   No Time
+	       NS   No Swim (or No Show)
+	       DNF  Did Not Finish
+	       DQ   Disqualified
+	       SCR  Scratch
+
+	  MEMBER Code 021   Membership transaction type
+	       R    Renew
+	       N    New
+	       C    Change
+	       D    Delete
+
+	  SEASON Code 022
+	       1    Season 1
+	       2    Season 2
+	       N    Year-round
+
+	  ORDER Code 024    relay leg order
+	       0    Not on team for this swim
+	       1    First leg
+	       2    Second leg
+	       3    Third leg
+	       4    Fourth leg
+	       A    Alternate
+
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                   39
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  EVENT AGE Code 025
+	       first two bytes are lower age limit (digits, or "UN"
+		     for no limit)
+	       last two bytes are upper age limit (digits, or "OV"
+		     for no limit)
+	       if the age is only one digit, fill with a zero
+		     (no blanks allowed)
+
+	  ETHNICITY Code 026
+	       The first byte contains the first ethnicity selection.
+	       The second byte contains an optional second ethnicity 
+		     selection.
+	       If the first byte contains a V,W or X then the second
+		     byte must be blank.   
+
+	       Q    African American
+	       R    Asian or Pacific Islander
+               S    Caucasian
+               T    Hispanic
+	       U    Native American
+	       V    Other
+	       W    Decline
+               
+
+
+
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  
+
+
+
+	  
+
+
+
+
+	  April 28, 1998                   40
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  Coding Examples
+
+
+	  The user of this interchange format has few limitations on the
+	  required records and the logical order.  There are only two
+	  required records - the file description record "A0" and the
+	  file terminator record "Z0".  These two records bracket a data
+	  transmission batch in a logical structure.  Optional records have
+	  mandatory fields to provide essential information to understand
+	  and utilize the data supplied.  Meet management applications will
+	  dominate the types of data transmissions.  The format has been
+	  designed to accommodate other USS uses.
+
+	  Meet Entry
+
+	  Example - two teams in a dual meet.  One team is the host and
+	  merges host team data with visiting team data.  The visiting team
+	  provides an "A0" record, a "B1" record as a courtesy, a "B2"
+	  record as a courtesy, a "C1" record, a "C2" record, seventy-four
+	  "D0" and "D3" records for forty-eight swimmers, five "E0" records 
+	  for the five relay entries, twenty-nine "F0" and "D0" records for 
+	  relay swimmers and alternates, and a "Z0" record to close the file.
+
+	  The host team merges a "C1" record, a "C2" record, sixty-three
+	  "D0" and "D3" records for fifty one swimmers, six "E0" records 
+	  for six relay entries, thirty-five "F0" records for the relay 
+	  swimmers and alternates, and a "Z0" record is shared from the 
+	  visiting team submission.  The diagram of the records is given 
+	  below.
+
+	       Visiting Team                 Host Team
+	       "A0"   1 record               (shares same record)
+	       "B1" 1 dual meet              (shares same record)
+	       "B2" 1 names host team        (shares same record)
+
+	       "C1" 1 visiting team          "C1" 1 host team
+	       "C2" 1 visiting team          "C2" 1 host team
+
+	       "D0"-                         "D0"-
+	       "D3" 74 visiting athl-event   "D3" 63 host athl-event
+	       "E0" 5 relay entries          "E0" 6 relay entries
+
+	       "F0" 29 relay swimmers        "F0" 35 relay swimmers
+
+	     "Z0" 1 record                  (shares same record)
+	  
+	  
+
+	  
+
+
+
+	  April 28, 1998                   41
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  Swimmers who have not completed the 120-day waiting period are
+	  coded with UNATTACHED status on the individual record, but they
+	  may still be associated with the team.  The individual event
+	  records may be in any order for that team.  The relay event
+	  records may be in any order but the relay name records must
+	  follow each relay event entry.
+
+	  For meets with multiple teams the file would have the records
+	  for one team together as a group, then the second team and so on
+	  until all the teams are completed.  Unattached swimmers who are
+	  not associated with a team would be grouped as an "unattached
+	  team" with a team ID record that indicates that the athletes are
+	  unattached.
+
+	  It is the responsibility of the participating teams to provide
+	  complete and accurate data.  The minimum required fields are
+	  noted with an "M" in the mandatory column in the Format Design
+	  section of this manual.  The host may require more information
+	  to conduct the meet and teams should review the meet invitations
+	  closely.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                   42
+	  !!! SDIF VERSION 3 DOCUMENT !!!
+
+	  Meet results from the dual meet
+
+	    "A0" 1 record for the meet with sanction number and text
+
+	     "B1" 1 record for meet host data
+	     "B2" 1 record for meet host data
+
+	     "C1" 1 visiting team record
+	     "C2" 1 visiting team record
+
+	       "D0" 64 records for visiting team
+		 "G0" 31 records for splits from individual swims
+
+	       "E0" 5 relay records for visiting team
+		 "F0" 20 relay name records for competing swimmers
+		 "G0" 4 split records for 4 swimmers on lead off
+
+	     "C1" 1 host team record
+	     "C2" 1 host team record
+
+	       "D0" 61 records for host team
+		 "G0" 22 records for splits from individual swims
+
+	       "E0" 4 relay records for host team
+		 "F0" 16 relay name records for host team
+
+	    "Z0" 1 terminator record for the meet.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  
+
+
+
+
+
+
+
+
+
+
+	  April 28, 1998                   43
