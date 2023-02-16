@@ -98,4 +98,25 @@ if TYPE_CHECKING:
 
 
 def model(*args, **kwargs):
-    return attr.define(*args, **kwargs)
+    return attr.define(*args, frozen=True, kw_only=True, **kwargs)
+
+
+A = TypeVar("A", bound=attr.AttrsInstance)
+
+
+def validate_model(model: type[A]) -> type[A]:
+    fields: tuple[attr.Attribute, ...] = attr.fields(model)
+    n = len(fields)
+    for i in range(n):
+        if "sdif" not in fields[i].metadata:
+            continue
+        a: Field = fields[i].metadata["sdif"]
+        al, ar = a.start, a.start + a.len
+        for j in range(i + 1, n):
+            if "sdif" not in fields[j].metadata:
+                continue
+            b: Field = fields[j].metadata["sdif"]
+            bl, br = b.start, b.start + b.len
+            assert al < bl
+            assert ar <= bl
+    return model

@@ -5,7 +5,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import ClassVar, Optional
 
-from sdif.fields import FieldType, model, spec
+from sdif.fields import FieldType, model, spec, validate_model
 
 t = FieldType
 
@@ -122,7 +122,8 @@ class AttachCode(Enum):
 # Records
 
 
-@model(frozen=True)
+@validate_model
+@model()
 class FileDescription:
     """Identify the file and the type of data to be
     transmitted.  Contact person and phone number
@@ -146,7 +147,8 @@ class FileDescription:
     submitted_by_lsc: Optional[str] = spec(start=156, len=2)
 
 
-@model(frozen=True)
+@validate_model
+@model()
 class Meet:
     """Identify the meet name, address, and dates.
 
@@ -173,7 +175,8 @@ class Meet:
     course: Optional[CourseStatusCode] = spec(150, 1)
 
 
-@model(frozen=True)
+@validate_model
+@model()
 class TeamId:
     """Identify the team name, code and address.  Region
     code defines USS region for team.
@@ -201,7 +204,8 @@ class TeamId:
     team_code5: Optional[str] = spec(150, 1)
 
 
-@model(frozen=True)
+@validate_model
+@model()
 class TeamEntry:
     """Identify the team coach and the number of entries
     for the team.
@@ -227,7 +231,8 @@ class TeamEntry:
     team_code5: Optional[str] = spec(150, 1)
 
 
-@model(frozen=True)
+@validate_model
+@model()
 class IndividualEvent:
     """Identify the athlete by name, registration number,
     birth date and gender.  Identify the stroke,
