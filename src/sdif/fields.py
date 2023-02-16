@@ -35,8 +35,6 @@ def spec(start: int, len: int, type: Optional[FieldType] = None, m2: bool = Fals
     return attr.field(metadata=dict(sdif=Field(start=start, len=len, type=type, m2=m2)))
 
 
-_T = TypeVar("_T")
-
 if TYPE_CHECKING:
     from attr import _C, __dataclass_transform__, _FieldTransformer, _OnSetAttrArgType
 
