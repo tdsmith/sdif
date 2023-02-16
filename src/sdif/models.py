@@ -119,6 +119,25 @@ class AttachCode(Enum):
     unattached = "U"
 
 
+class Ethnicity(Enum):
+    """ETHNICITY Code 026
+    The first byte contains the first ethnicity selection.
+    The second byte contains an optional second ethnicity
+    selection.
+    If the first byte contains a V,W or X then the second
+    byte must be blank.
+    [Ed. note: X is not defined in the spec.]
+    """
+
+    african_american = "Q"
+    asian_pacific_islander = "R"
+    caucasian = "S"
+    hispanic = "T"
+    native_american = "U"
+    other = "V"
+    decline = "W"
+
+
 # Records
 
 
@@ -289,3 +308,65 @@ class IndividualEvent:
     points_scored_finals: Optional[Decimal] = spec(139, 4)
     event_time_class: Optional[str] = spec(143, 2)
     flight_status: str = spec(145, 1)
+
+
+@validate_model
+@model()
+class IndividualInfo:
+    """Contains additional information that is not
+    included in pre version 3 SDI formats.
+
+    This record provides space for the new USS# as well as the
+    swimmers preferred first name. For meet files this record will
+    follow the D0 record and the F0 record if relays are included.
+    A swimmer with multiple D0 records will have one D3 record
+    following his/her first D0 record.
+    """
+
+    identifier: ClassVar[str] = "D3"
+    uss_number: str = spec(3, 14, t.ussnum, m2=True)
+    preferred_first_name: str = spec(17, 15)
+    ethnicity_1: Optional[Ethnicity] = spec(32, 1)
+    ethnicity_2: Optional[Ethnicity] = spec(33, 1)
+    junior_high: Optional[bool] = spec(34, 1)
+    senior_high: Optional[bool] = spec(35, 1)
+    ymca_ywca: Optional[bool] = spec(36, 1)
+    college: Optional[bool] = spec(37, 1)
+    summer_league: Optional[bool] = spec(38, 1)
+    masters: Optional[bool] = spec(39, 1)
+    disabled_sports_org: Optional[bool] = spec(40, 1)
+    water_polo: Optional[bool] = spec(41, 1)
+    none: Optional[bool] = spec(42, 1)
+
+
+@validate_model
+@model()
+class FileTerminator:
+    """Identify the logical end of file for a file
+    transmission.  Record statistics and swim
+    statistics are listed for convenience.
+
+    This record is mandatory in each file.  Each file ends with this
+    record and each file has only one record of this type.  The first
+    four fields are mandatory.  Additional fields provide for text
+    and record counts.
+    """
+
+    identifier: ClassVar[str] = "Z0"
+    organization: Optional[OrganizationCode] = spec(3, 1)
+    file_code: FileCode = spec(12, 2)
+    notes: str = spec(14, 30)
+    n_b_records: Optional[int] = spec(44, 3)
+    n_meets: Optional[int] = spec(47, 3)
+    n_c_records: Optional[int] = spec(50, 4)
+    n_teams: Optional[int] = spec(54, 4)
+    n_d_records: Optional[int] = spec(58, 6)
+    n_swimmers: Optional[int] = spec(64, 6)
+    n_e_records: Optional[int] = spec(70, 5)
+    n_f_records: Optional[int] = spec(75, 6)
+    n_g_records: Optional[int] = spec(81, 6)
+    batch_number: Optional[int] = spec(87, 5)
+    n_new_members: Optional[int] = spec(92, 3)
+    n_renew_members: Optional[int] = spec(95, 3)
+    n_member_changes: Optional[int] = spec(98, 3)
+    n_member_deletes: Optional[int] = spec(101, 3)
