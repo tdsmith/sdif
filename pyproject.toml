@@ -12,7 +12,7 @@ requires-python = ">=3.9"
 dependencies = ["attrs", "typing-extensions", "typing-inspect"]
 
 [project.optional-dependencies]
-dev = ["black", "isort", "pip-tools", "pytest", "twine"]
+dev = ["black", "isort", "pip-tools", "pyright", "pytest"]
 
 [tool.black]
 line-length = 100

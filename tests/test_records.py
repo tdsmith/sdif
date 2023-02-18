@@ -5,8 +5,8 @@ from typing import Any
 import pytest
 
 import sdif.models as models
-from sdif.fields import FieldType, FieldDef
-from sdif.records import encode_value, decode_value, encode_records, decode_records
+from sdif.fields import FieldDef, FieldType
+from sdif.records import decode_records, decode_value, encode_records, encode_value
 from sdif.time import Time, TimeCode
 
 

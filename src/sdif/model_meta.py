@@ -1,17 +1,8 @@
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Optional,
-    TypeVar,
-    overload,
-)
-
+from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, overload
 
 import attr
 
-from sdif.fields import FieldType, FieldMetadata, SdifModel
-
+from sdif.fields import FieldMetadata, FieldType, SdifModel
 
 REGISTERED_MODELS: dict[str, type[SdifModel]] = {}
 
