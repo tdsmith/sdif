@@ -23,9 +23,9 @@ def encode_value(field: FieldDef, value: Any) -> str:
 
     # "Alpha fields containing only numeric data should be right justified."
     if field_type == fields.FieldType.alpha:
-        assert isinstance(value, str)
-        if value.isnumeric():
-            value = int(value)
+        str_value = str(value)
+        if str_value.isnumeric():
+            value = int(str_value)
             field_type = FieldType.int
 
     if field_type == FieldType.usps:
@@ -41,7 +41,7 @@ def encode_value(field: FieldDef, value: Any) -> str:
         FieldType.usps,
         FieldType.ussnum,
     ):
-        value = "" if value is None else str(value)
+        value = str(value)
         if len(value) > field.len:
             raise ValueError(f"Value is too wide to encode; {field.len=}, {value=}")
         return f"{{: <{field.len}s}}".format(value)
