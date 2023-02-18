@@ -23,3 +23,6 @@ profile = "black"
 [tool.pyright]
 pythonVersion = "3.9"
 pythonPlatform = "All"
+
+[tool.setuptools.package-data]
+sdif = ["py.typed"]
