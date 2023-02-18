@@ -6,7 +6,7 @@ import pytest
 
 import sdif.models as models
 from sdif.fields import FieldType, FieldDef
-from sdif.records import encode_value
+from sdif.records import encode_value, decode_value, encode_records, decode_records
 from sdif.time import Time, TimeCode
 
 
@@ -25,7 +25,6 @@ from sdif.time import Time, TimeCode
         (FieldType.date, 8, None, "        "),
         (FieldType.dec, 4, None, "    "),
         (FieldType.dec, 8, Decimal("1.234"), "   1.234"),
-        (FieldType.dec, 8, Decimal("1.23456789"), "1.234567"),
         (FieldType.int, 4, 1234, "1234"),
         (FieldType.int, 8, 1234, "    1234"),
         (FieldType.logical, 1, True, "T"),
@@ -38,7 +37,6 @@ from sdif.time import Time, TimeCode
         (FieldType.postal_code, 8, "01234", "01234   "),
         (FieldType.postal_code, 8, "V6E 1T7", "V6E 1T7 "),
         (FieldType.usps, 2, None, "  "),
-        (FieldType.usps, 2, "va", "VA"),
         (FieldType.usps, 2, "BC", "BC"),
         (FieldType.ussnum, 14, None, " " * 14),
         (FieldType.ussnum, 14, "011553CATADURA", "011553CATADURA"),
@@ -49,8 +47,62 @@ from sdif.time import Time, TimeCode
         (FieldType.time, 8, TimeCode.did_not_finish, "DNF     "),
     ],
 )
-def test_encode_value(field_type: FieldType, len: int, value: Any, expected: str):
+def test_round_trip_value(field_type: FieldType, len: int, value: Any, expected: str):
+    """Test round-trip value conversion.
+    These values should all convert back to a form equivalent to the original representation.
+    """
     field_def = FieldDef(
-        "bogus_field", start=0, len=len, m1=False, m2=False, record_type=field_type, model_type=Any
+        "bogus_field",
+        start=0,
+        len=len,
+        m1=False,
+        m2=False,
+        record_type=field_type,
+        model_type=type(value),
     )
     assert encode_value(field_def, value) == expected
+    assert decode_value(field_def, expected) == value
+
+
+@pytest.mark.parametrize(
+    ("field_type", "len", "value", "expected", "roundtrip"),
+    [
+        (FieldType.dec, 8, Decimal("1.23456789"), "1.234567", Decimal("1.234567")),
+        (FieldType.usps, 2, "va", "VA", "VA"),
+    ],
+)
+def test_round_trip_ish_value(
+    field_type: FieldType, len: int, value: Any, expected: str, roundtrip: str
+):
+    """Test round-trip value conversion.
+    These values suffer some form of lossy conversion, but do not throw errors.
+    """
+    field_def = FieldDef(
+        "bogus_field",
+        start=0,
+        len=len,
+        m1=False,
+        m2=False,
+        record_type=field_type,
+        model_type=type(value),
+    )
+    assert encode_value(field_def, value) == expected
+    assert decode_value(field_def, expected) == roundtrip
+
+
+def test_round_trip_record():
+    m = models.FileDescription(
+        organization=models.OrganizationCode.masters,
+        sdif_version="3.0",
+        file_code=models.FileCode.vendor_defined,
+        software_name="hi, mom",
+        software_version="beta",
+        contact_name="Joe Bloggs",
+        contact_phone="+15555551212",
+        file_creation=date.today(),
+        submitted_by_lsc=None,
+    )
+    serialized = encode_records([m])
+    print(repr(serialized))
+    (deserialized,) = decode_records(serialized)
+    assert m == deserialized
