@@ -121,14 +121,14 @@ class AttachCode(Enum):
     unattached = "U"
 
 
-class Ethnicity(Enum):
+class EthnicityCode(Enum):
     """ETHNICITY Code 026
     The first byte contains the first ethnicity selection.
     The second byte contains an optional second ethnicity
     selection.
     If the first byte contains a V,W or X then the second
     byte must be blank.
-    [Ed. note: X is not defined in the spec.]
+    [Ed. note: X is not defined in the v3 spec.]
     """
 
     african_american = "Q"
@@ -328,8 +328,8 @@ class IndividualInfo:
     identifier: ClassVar[str] = "D3"
     uss_number: str = spec(3, 14, t.ussnum, m2=True)
     preferred_first_name: str = spec(17, 15)
-    ethnicity_1: Optional[Ethnicity] = spec(32, 1)
-    ethnicity_2: Optional[Ethnicity] = spec(33, 1)
+    ethnicity_1: Optional[EthnicityCode] = spec(32, 1)
+    ethnicity_2: Optional[EthnicityCode] = spec(33, 1)
     junior_high: Optional[bool] = spec(34, 1)
     senior_high: Optional[bool] = spec(35, 1)
     ymca_ywca: Optional[bool] = spec(36, 1)
