@@ -50,5 +50,7 @@ from sdif.time import Time, TimeCode
     ],
 )
 def test_encode_value(field_type: FieldType, len: int, value: Any, expected: str):
-    field_def = FieldDef("bogus_field", start=0, len=len, m1=False, m2=False, type=field_type)
+    field_def = FieldDef(
+        "bogus_field", start=0, len=len, m1=False, m2=False, record_type=field_type, model_type=Any
+    )
     assert encode_value(field_def, value) == expected
