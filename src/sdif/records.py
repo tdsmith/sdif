@@ -1,14 +1,14 @@
 from datetime import date
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Iterable, Final, TypeVar, get_args
+from typing import Any, Final, Iterable, TypeVar, get_args
+
 from typing_extensions import assert_never
 
 import sdif.fields as fields
 import sdif.model_meta as model_meta
 from sdif.fields import FieldDef, FieldType, SdifModel
 from sdif.time import Time, TimeCode, TimeT
-
 
 RECORD_CONTENT_LEN: Final = 160
 RECORD_SEP: Final = "\r\n"

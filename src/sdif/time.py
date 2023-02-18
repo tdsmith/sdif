@@ -1,9 +1,9 @@
 import re
 from enum import Enum
 from typing import Union
-from typing_extensions import Self
 
 import attr
+from typing_extensions import Self
 
 
 class TimeCode(Enum):
