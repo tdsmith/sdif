@@ -1,7 +1,7 @@
 from datetime import date
 from decimal import Decimal
 from enum import Enum
-from typing import ClassVar, Optional, Protocol
+from typing import ClassVar, Optional
 
 from typing_extensions import Self
 
@@ -142,11 +142,6 @@ class EthnicityCode(Enum):
 
 
 # Records
-
-
-class SdifModel(Protocol):
-    __attrs_attrs__: ClassVar
-    identifier: ClassVar[str]
 
 
 @validate_model

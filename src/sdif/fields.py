@@ -1,10 +1,30 @@
+import datetime
 import enum
+from decimal import Decimal
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    ClassVar,
+    Iterator,
+    Optional,
+    Protocol,
+    TypeVar,
+    overload,
+)
 
 import attr
+from typing_inspect import get_args, is_optional_type
+
+from sdif.time import Time, TimeT
 
 # Model infrastructure
+
+
+class SdifModel(Protocol):
+    __attrs_attrs__: ClassVar
+    identifier: ClassVar[str]
 
 
 class FieldType(Enum):
@@ -24,15 +44,85 @@ class FieldType(Enum):
 
 
 @attr.define(frozen=True)
-class Field:
+class FieldMetadata:
     start: int
     len: int
     type: Optional[FieldType]
     m2: bool
 
 
+def infer_type(attribute: attr.Attribute) -> FieldType:
+    if "sdif" not in attribute.metadata:
+        raise TypeError("Not an SDIF spec field")
+    field: FieldMetadata = attribute.metadata["sdif"]
+    if field.type:
+        return field.type
+
+    if is_optional_type(attribute.type):
+        (attr_type,) = [arg for arg in get_args(attribute.type) if arg != type(None)]
+    else:
+        attr_type = attribute.type
+
+    if attr_type == str:
+        return FieldType.alpha
+    if attr_type == int:
+        return FieldType.int
+    if attr_type in (Time, TimeT):
+        return FieldType.time
+    if isinstance(attr_type, type) and issubclass(attr_type, Enum):
+        return FieldType.code
+    if attr_type == datetime.date:
+        return FieldType.date
+    if attr_type == Decimal:
+        return FieldType.dec
+    if attr_type == int:
+        return FieldType.int
+    if attr_type == bool:
+        return FieldType.logical
+    raise ValueError("Native type not recognized", attr_type)
+
+
 def spec(start: int, len: int, type: Optional[FieldType] = None, m2: bool = False):
-    return attr.field(metadata=dict(sdif=Field(start=start, len=len, type=type, m2=m2)))
+    return attr.field(metadata=dict(sdif=FieldMetadata(start=start, len=len, type=type, m2=m2)))
+
+
+@attr.define(frozen=True)
+class FieldDef:
+    name: str
+    start: int
+    len: int
+    m1: bool
+    m2: bool
+    type: FieldType
+
+
+def record_fields(cls: type[SdifModel]) -> Iterator[FieldDef]:
+    fields = attr.fields(cls)
+
+    yield FieldDef(
+        name="identifier",
+        start=0,
+        len=2,
+        m1=True,
+        m2=False,
+        type=FieldType.const,
+    )
+
+    field: attr.Attribute
+    for field in fields:
+        if "sdif" not in field.metadata:
+            continue
+        meta = field.metadata["sdif"]
+        assert isinstance(meta, FieldMetadata)
+        m1 = not is_optional_type(field.type)
+        yield FieldDef(
+            name=field.name,
+            start=meta.start,
+            len=meta.len,
+            m1=m1,
+            m2=meta.m2,
+            type=infer_type(field),
+        )
 
 
 if TYPE_CHECKING:
@@ -103,18 +193,15 @@ A = TypeVar("A", bound=attr.AttrsInstance)
 
 
 def validate_model(model: type[A]) -> type[A]:
+    attr.resolve_types(model)
     fields: tuple[attr.Attribute, ...] = attr.fields(model)
-    n = len(fields)
-    for i in range(n):
-        if "sdif" not in fields[i].metadata:
+    indices = []
+    for field in fields:
+        if "sdif" not in field.metadata:
             continue
-        a: Field = fields[i].metadata["sdif"]
-        al, ar = a.start, a.start + a.len
-        for j in range(i + 1, n):
-            if "sdif" not in fields[j].metadata:
-                continue
-            b: Field = fields[j].metadata["sdif"]
-            bl, br = b.start, b.start + b.len
-            assert al < bl
-            assert ar <= bl
+        spec: FieldMetadata = field.metadata["sdif"]
+        indices.append(spec.start)
+        indices.append(spec.start + spec.len)
+    # Assert field specs are sorted and non-overlapping
+    assert indices == sorted(indices)
     return model
