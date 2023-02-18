@@ -1,9 +1,8 @@
-from __future__ import annotations
-
 from datetime import date
 from decimal import Decimal
 from enum import Enum
-from typing import ClassVar, Optional
+
+from typing_extensions import Self
 
 from sdif.fields import FieldType, model, spec, validate_model
 from sdif.time import Time
@@ -107,7 +106,7 @@ class CourseStatusCode(Enum):
     long_meters = "L"
     disqualified = "X"
 
-    def normalize(self) -> CourseStatusCode:
+    def normalize(self) -> Self:
         return {
             self.short_meters_int: self.short_meters,
             self.long_meters_int: self.long_meters,
