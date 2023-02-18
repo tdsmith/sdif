@@ -6,6 +6,9 @@ from enum import Enum
 from typing import ClassVar, Optional
 
 from sdif.fields import FieldType, model, spec, validate_model
+from sdif.time import Time
+from sdif.time import TimeCode as TimeCode
+from sdif.time import TimeT
 
 t = FieldType
 
@@ -291,13 +294,13 @@ class IndividualEvent:
     event_number: Optional[str] = spec(73, 4)
     event_age: Optional[str] = spec(77, 4)
     date_of_swim: Optional[date] = spec(81, 8)
-    seed_time: Optional[str] = spec(89, 8, t.time)
+    seed_time: Optional[Time] = spec(89, 8)
     seed_time_course: Optional[CourseStatusCode] = spec(97, 1)
-    prelim_time: Optional[str] = spec(98, 8, t.time)
+    prelim_time: Optional[TimeT] = spec(98, 8, t.time)
     prelim_time_course: Optional[CourseStatusCode] = spec(106, 1)
-    swim_off_time: Optional[str] = spec(107, 8, t.time)
+    swim_off_time: Optional[TimeT] = spec(107, 8, t.time)
     swim_off_time_course: Optional[CourseStatusCode] = spec(115, 1)
-    finals_time: Optional[str] = spec(116, 8, t.time)
+    finals_time: Optional[TimeT] = spec(116, 8, t.time)
     finals_time_course: Optional[CourseStatusCode] = spec(124, 1)
     prelim_heat_number: Optional[int] = spec(125, 2)
     prelim_lane_number: Optional[int] = spec(127, 2)
