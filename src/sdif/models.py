@@ -5,7 +5,8 @@ from typing import ClassVar, Optional
 
 from typing_extensions import Self
 
-from sdif.fields import FieldType, model, spec, validate_model
+from sdif.fields import FieldType
+from sdif.model_meta import model, spec
 from sdif.time import Time
 from sdif.time import TimeCode as TimeCode
 from sdif.time import TimeT
@@ -144,8 +145,7 @@ class EthnicityCode(Enum):
 # Records
 
 
-@validate_model
-@model()
+@model(frozen=True, kw_only=True)
 class FileDescription:
     """Identify the file and the type of data to be
     transmitted.  Contact person and phone number
@@ -169,8 +169,7 @@ class FileDescription:
     submitted_by_lsc: Optional[str] = spec(start=156, len=2)
 
 
-@validate_model
-@model()
+@model(frozen=True, kw_only=True)
 class Meet:
     """Identify the meet name, address, and dates.
 
@@ -197,8 +196,7 @@ class Meet:
     course: Optional[CourseStatusCode] = spec(150, 1)
 
 
-@validate_model
-@model()
+@model(frozen=True, kw_only=True)
 class TeamId:
     """Identify the team name, code and address.  Region
     code defines USS region for team.
@@ -226,8 +224,7 @@ class TeamId:
     team_code5: Optional[str] = spec(150, 1)
 
 
-@validate_model
-@model()
+@model(frozen=True, kw_only=True)
 class TeamEntry:
     """Identify the team coach and the number of entries
     for the team.
@@ -253,8 +250,7 @@ class TeamEntry:
     team_code5: Optional[str] = spec(150, 1)
 
 
-@validate_model
-@model()
+@model(frozen=True, kw_only=True)
 class IndividualEvent:
     """Identify the athlete by name, registration number,
     birth date and gender.  Identify the stroke,
@@ -313,8 +309,7 @@ class IndividualEvent:
     flight_status: str = spec(145, 1)
 
 
-@validate_model
-@model()
+@model(frozen=True, kw_only=True)
 class IndividualInfo:
     """Contains additional information that is not
     included in pre version 3 SDI formats.
@@ -342,8 +337,7 @@ class IndividualInfo:
     none: Optional[bool] = spec(42, 1)
 
 
-@validate_model
-@model()
+@model(frozen=True, kw_only=True)
 class FileTerminator:
     """Identify the logical end of file for a file
     transmission.  Record statistics and swim
