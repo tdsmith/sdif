@@ -97,7 +97,7 @@ def encode_record(record: fields.SdifModel) -> str:
         value = getattr(record, field.name)
         encoded = encode_value(field, value)
         assert len(encoded) == field.len
-        buf[field.start : field.start + field.len] = encoded
+        buf[field.start - 1 : field.start - 1 + field.len] = encoded
     return "".join(buf)
 
 
@@ -168,7 +168,7 @@ def decode_record(record: str, record_type: type[M]) -> M:
     for field in fields.record_fields(record_type):
         if field.name == "identifier":
             continue
-        value = record[field.start : field.start + field.len]
+        value = record[field.start - 1 : field.start - 1 + field.len]
         decoded = decode_value(field, value)
         kwargs[field.name] = decoded
     return record_type(**kwargs)
