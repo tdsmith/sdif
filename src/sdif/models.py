@@ -119,11 +119,44 @@ class CourseStatusCode(Enum):
         }.get(self, self)
 
 
+class EventTimeClassCode(Enum):
+    """EVENT TIME CLASS Code 014: Event Time Class code
+    The following characters are concatenated to form a 2-byte
+    code for the event time class.  The first character
+    indicates the lower limit; the second character indicates
+    the upper limit.  22 indicates B meets, 23 indicates B-A
+    meets, and 4O indicates AA+ meets.
+    """
+
+    no_lower_limit = "U"
+    no_upper_limit = "0"
+    novice = "1"
+    b_standard = "2"
+    bb_standard = "P"
+    a_standard = "3"
+    aa_standard = "4"
+    aaa_standard = "5"
+    aaaa_standard = "6"
+    junior_standard = "J"
+    senior_standard = "S"
+
+
 class AttachCode(Enum):
     """ATTACH Code 016: Attached code"""
 
     attached = "A"
     unattached = "U"
+
+
+class OrderCode(Enum):
+    """ORDER Code 024: relay leg order"""
+
+    not_on_team = "0"
+    first_leg = "1"
+    second_leg = "2"
+    third_leg = "3"
+    fourth_leg = "4"
+    alternate = "A"
 
 
 class EthnicityCode(Enum):
@@ -341,6 +374,106 @@ class IndividualInfo:
 
 
 @model(frozen=True, kw_only=True)
+class RelayEvent:
+    """Identify the relay team by name, USS team code,
+    and gender.  Identify the stroke, distance, event
+    number, date and time of the swims.
+
+    This record is used to identify the team and the relay event.
+    When used, one relay event record would be submitted for each
+    relay squad entered in a relay event.  The relay team name, USS
+    team code, and gender code are required.  Fields for the stroke,
+    distance, event number, age range, and date of swim, are also
+    required.  Additional fields provide for the age or class, seed
+    time, prelim time, swim off time, finals time, and pool lanes
+    used in competition.
+
+    relay_team_name is one alpha char to
+    concatenate with the abbreviated team
+    name (48/16) in record C1 -- creates such
+    names as "Dolphins A"
+    """
+
+    identifier: ClassVar[str] = "E0"
+    organization: Optional[OrganizationCode] = spec(3, 1, m2=True)
+    relay_team_name: str = spec(12, 1)
+    team_code: str = spec(13, 6)
+    n_f0_records: Optional[int] = spec(19, 2)
+    event_sex: EventSexCode = spec(21, 1)
+    relay_distance: int = spec(22, 4)
+    stroke: StrokeCode = spec(26, 1)
+    event_number: Optional[str] = spec(27, 4)
+    event_age: str = spec(31, 4)
+    total_athlete_age: int = spec(35, 3)
+    swim_date: Optional[date] = spec(38, 8)
+    seed_time: Optional[TimeT] = spec(46, 8)
+    seed_course: Optional[CourseStatusCode] = spec(54, 1)
+    prelim_time: Optional[TimeT] = spec(55, 8)
+    prelim_course: Optional[CourseStatusCode] = spec(63, 1)
+    swimoff_time: Optional[TimeT] = spec(64, 8)
+    swimoff_course: Optional[CourseStatusCode] = spec(72, 1)
+    finals_time: Optional[TimeT] = spec(73, 8)
+    finals_course: Optional[CourseStatusCode] = spec(81, 1)
+    prelim_heat: Optional[int] = spec(82, 2)
+    prelim_lane: Optional[int] = spec(84, 2)
+    finals_heat: Optional[int] = spec(86, 2)
+    finals_lane: Optional[int] = spec(88, 2)
+    prelim_place: Optional[int] = spec(90, 3)
+    finals_place: Optional[int] = spec(93, 3)
+    finals_points: Optional[Decimal] = spec(96, 4)
+    event_time_class_lower: Optional[EventTimeClassCode] = spec(100, 1)
+    event_time_class_upper: Optional[EventTimeClassCode] = spec(101, 1)
+
+
+@model(frozen=True, kw_only=True)
+class RelayName:
+    """Identify the athletes on a relay team by name, USS
+    registration number, birth date and gender.
+    Identify the stroke, distance, event number, date,
+    session and time of the swims.
+
+    This record is used to identify the athletes on a relay team and
+    the relay order.  When used, one relay name record is submitted
+    for each relay athlete entered in a relay event.  Alternates may
+    be listed on additional records as an optional method of using
+    this record.  The relay team name, USS team code, and gender
+    code are required.  The Event ID # field (12/4) is required to
+    properly identify the relay team to an event and to further link
+    the splits for a relay athlete.  Fields for the stroke, distance,
+    event number, age or class, and date of swim, are also required.
+    Additional fields provide for the seed time, prelim time, swim
+    off time, finals time, and pool lanes used in competition.
+
+    NOTE:  Relay name records must be preceded by at least one E0
+    relay event record.  If this record is missing, the athlete on a
+    relay team cannot be attached to the proper relay squad.
+
+
+    relay_team_name:  one alpha char to concatenate with the team abbreviation in
+    record C1 -- creates such names as "Dolphins A"
+    """
+
+    identifier: ClassVar[str] = "F0"
+    organization: Optional[OrganizationCode] = spec(3, 1, m2=True)
+    team_code: str = spec(16, 6)
+    relay_team_name: Optional[str] = spec(22, 1)
+    swimmer_name: str = spec(23, 28, t.name_)
+    uss_number: Optional[str] = spec(51, 12)
+    citizen: Optional[str] = spec(63, 3)
+    birthdate: Optional[date] = spec(66, 8, m2=True)
+    age_or_class: Optional[str] = spec(74, 2)
+    sex: SexCode = spec(76, 1)
+    prelim_order: OrderCode = spec(77, 1)
+    swimoff_order: OrderCode = spec(78, 1)
+    finals_order: OrderCode = spec(79, 1)
+    leg_time: Optional[TimeT] = spec(80, 8)
+    course: Optional[CourseStatusCode] = spec(88, 1)
+    takeoff_time: Optional[Decimal] = spec(89, 4)
+    uss_number_new: Optional[str] = spec(93, 14, t.ussnum, m2=True)
+    preferred_first_name: Optional[str] = spec(107, 15)
+
+
+@model(frozen=True, kw_only=True)
 class FileTerminator:
     """Identify the logical end of file for a file
     transmission.  Record statistics and swim
@@ -353,7 +486,7 @@ class FileTerminator:
     """
 
     identifier: ClassVar[str] = "Z0"
-    organization: Optional[OrganizationCode] = spec(3, 1)
+    organization: Optional[OrganizationCode] = spec(3, 1, m2=True)
     file_code: FileCode = spec(12, 2)
     notes: str = spec(14, 30)
     n_b_records: Optional[int] = spec(44, 3)
