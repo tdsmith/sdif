@@ -108,11 +108,14 @@ class CourseStatusCode(Enum):
     long_meters = "L"
     disqualified = "X"
 
+    short_meters_hytek_nonstandard = "S"
+
     def normalize(self) -> Self:
         return {
             self.short_meters_int: self.short_meters,
             self.long_meters_int: self.long_meters,
             self.short_yards_int: self.short_yards,
+            self.short_meters_hytek_nonstandard: self.short_meters,
         }.get(self, self)
 
 
@@ -184,7 +187,7 @@ class Meet:
     organization: Optional[OrganizationCode] = spec(3, 1)
     meet_name: str = spec(12, 30)
     meet_address_1: str = spec(42, 22)
-    meet_address_2: str = spec(64, 22)
+    meet_address_2: Optional[str] = spec(64, 22)
     meet_city: Optional[str] = spec(86, 20, m2=True)
     meet_state: Optional[str] = spec(106, 2, type=t.usps, m2=True)
     postal_code: Optional[str] = spec(108, 10)
@@ -306,7 +309,7 @@ class IndividualEvent:
     finals_place_ranking: Optional[int] = spec(136, 3)
     points_scored_finals: Optional[Decimal] = spec(139, 4)
     event_time_class: Optional[str] = spec(143, 2)
-    flight_status: str = spec(145, 1)
+    flight_status: Optional[str] = spec(145, 1)
 
 
 @model(frozen=True, kw_only=True)
@@ -322,8 +325,8 @@ class IndividualInfo:
     """
 
     identifier: ClassVar[str] = "D3"
-    uss_number: str = spec(3, 14, t.ussnum, m2=True)
-    preferred_first_name: str = spec(17, 15)
+    uss_number: Optional[str] = spec(3, 14, t.ussnum, m2=True)
+    preferred_first_name: Optional[str] = spec(17, 15)
     ethnicity_1: Optional[EthnicityCode] = spec(32, 1)
     ethnicity_2: Optional[EthnicityCode] = spec(33, 1)
     junior_high: Optional[bool] = spec(34, 1)
