@@ -93,7 +93,7 @@ def test_round_trip_ish_value(
 def test_round_trip_record():
     m = models.FileDescription(
         organization=models.OrganizationCode.masters,
-        sdif_version="3.0",
+        sdif_version="V3",
         file_code=models.FileCode.vendor_defined,
         software_name="hi, mom",
         software_version="beta",
@@ -106,3 +106,10 @@ def test_round_trip_record():
     print(repr(serialized))
     (deserialized,) = decode_records(serialized)
     assert m == deserialized
+
+
+def test_round_trip_hytek_signon():
+    orig = "A02V3      02                              Hy-Tek, Ltd         WMM 8.0Ea Hy-Tek, Ltd     -USS866-456-511102182023                                               "
+    (record,) = decode_records([orig])
+    serialized = encode_records([record])
+    assert orig == serialized
