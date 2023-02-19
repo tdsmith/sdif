@@ -2,7 +2,15 @@ import datetime
 import enum
 from decimal import Decimal
 from enum import Enum
-from typing import ClassVar, Iterator, Optional, Protocol, Union, cast, runtime_checkable
+from typing import (
+    ClassVar,
+    Iterator,
+    Optional,
+    Protocol,
+    Union,
+    cast,
+    runtime_checkable,
+)
 
 import attr
 from typing_inspect import get_args, is_optional_type, is_union_type
@@ -83,7 +91,7 @@ def record_fields(cls: type[SdifModel]) -> Iterator[FieldDef]:
 
     yield FieldDef(
         name="identifier",
-        start=0,
+        start=1,
         len=2,
         m1=True,
         m2=False,
