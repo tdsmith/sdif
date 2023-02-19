@@ -83,11 +83,11 @@ For the specific case of feeding meet entry data to Meet Manager,
 [one hint](https://groups.google.com/g/sdif-forum/c/pOzDt29k0Ok) is
 
 > I have found that the only essential records are:
-* one A0 (FileDescription) and
-* one B1 (Meet) at the start of the file,
-* one C1 (TeamId) line per club,
-* one D0 line (IndividualEvent) per swimmer per event followed by one D1 line (IndividualInfo) per swimmer,
-* and a Z0 (FileTerminator) at the end of the file.
+> * one A0 (FileDescription) and
+> * one B1 (Meet) at the start of the file,
+> * one C1 (TeamId) line per club,
+> * one D0 line (IndividualEvent) per swimmer per event followed by one D1 line (IndividualInfo) per swimmer,
+> * and a Z0 (FileTerminator) at the end of the file.
 
 ## Other resources
 
