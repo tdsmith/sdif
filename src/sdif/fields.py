@@ -2,10 +2,10 @@ import datetime
 import enum
 from decimal import Decimal
 from enum import Enum
-from typing import ClassVar, Iterator, Optional, Protocol, cast, runtime_checkable
+from typing import ClassVar, Iterator, Optional, Protocol, Union, cast, runtime_checkable
 
 import attr
-from typing_inspect import get_args, is_optional_type
+from typing_inspect import get_args, is_optional_type, is_union_type
 
 from sdif.time import Time, TimeT
 
@@ -52,6 +52,8 @@ def infer_type(attr_type: type, field_meta: FieldMetadata) -> FieldType:
         return FieldType.int
     if attr_type in (Time, TimeT):
         return FieldType.time
+    if is_union_type(attr_type) and Time in get_args(attr_type):
+        return FieldType.time
     if isinstance(attr_type, type) and issubclass(attr_type, Enum):
         return FieldType.code
     if attr_type == datetime.date:
@@ -97,7 +99,11 @@ def record_fields(cls: type[SdifModel]) -> Iterator[FieldDef]:
         assert isinstance(meta, FieldMetadata)
 
         if is_optional_type(field.type):
-            (attr_type,) = [arg for arg in get_args(field.type) if arg != type(None)]
+            args: list[type] = [arg for arg in get_args(field.type) if arg != type(None)]
+            if len(args) == 1:
+                (attr_type,) = args
+            else:
+                attr_type = Union[tuple(args)]  # type: ignore
         else:
             attr_type = field.type
         attr_type = cast(type, attr_type)
