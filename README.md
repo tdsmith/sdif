@@ -2,6 +2,10 @@
 
 Parser/writer for US Swimming SDIF files.
 
+![Main workflow](https://github.com/tdsmith/sdif/actions/workflows/main.yml/badge.svg?branch=main)
+[![PyPI](https://img.shields.io/pypi/v/sdif)](https://pypi.org/project/sdif/)
+
+
 The format is described in sdifv3.txt,
 obtained from https://www.usms.org/admin/sdifv3f.txt,
 dated April 28 1998, accessed Feb 12 2023.

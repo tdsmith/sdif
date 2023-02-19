@@ -1,15 +1,16 @@
 [build-system]
-requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+requires = ["setuptools"]
 
 [project]
-name = "sdif"
-version = "23.2.0a0"
 authors = [{ name = "Tim D. Smith", email = "tim@tds.xyz" }]
-description = "Support for US Swimming SDIF v3 files"
 classifiers = ["License :: OSI Approved :: Apache Software License"]
-requires-python = ">=3.9"
 dependencies = ["attrs", "typing-extensions", "typing-inspect"]
+description = "Support for US Swimming SDIF v3 files"
+name = "sdif"
+readme = "README.md"
+requires-python = ">=3.9"
+version = "23.2.0"
 
 [project.optional-dependencies]
 dev = ["black", "isort", "pip-tools", "pyright", "pytest"]
@@ -21,8 +22,8 @@ line-length = 100
 profile = "black"
 
 [tool.pyright]
-pythonVersion = "3.9"
 pythonPlatform = "All"
+pythonVersion = "3.9"
 
 [tool.setuptools.package-data]
 sdif = ["py.typed"]
