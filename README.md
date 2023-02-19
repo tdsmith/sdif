@@ -5,7 +5,7 @@ Parser/writer for US Swimming SDIF files.
 [![GitHub forks](https://img.shields.io/github/forks/tdsmith/sdif)](https://github.com/tdsmith/sdif/)
 ![Main workflow](https://github.com/tdsmith/sdif/actions/workflows/main.yml/badge.svg?branch=main)
 [![PyPI](https://img.shields.io/pypi/v/sdif)](https://pypi.org/project/sdif/)
-[![This project uses CalVer](https://img.shields.io/badge/calver-YY.0M.MICRO-22bfda.svg)](https://calver.org/)
+[![This project uses CalVer](https://img.shields.io/badge/calver-YY.MM.MICRO-22bfda.svg)](https://calver.org/)
 
 
 The format is described in sdifv3.txt,
