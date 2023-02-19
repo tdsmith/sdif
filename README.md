@@ -34,7 +34,12 @@ if you'd like to get a bunch of entries into some meet management software,
 there aren't many obvious starting points!
 They don't accept anything as quotidian as a spreadsheet.
 
-So here's a parsing library you can use to make sense of these files,
+SDIF (SD3) is the proud exception, so here's a library.
+SD3 is a single-file data format with multiple record types and optional internal consistency checks.
+Each line in the file represents a record, and the fields are specified as fixed-width regions.
+It seems intended to represent a sort of flat-file database as much as an interchange format.
+
+You can use this package to make sense of these files,
 or construct the records that you need to get data into a meet management tool.
 
 ## How do I start?
