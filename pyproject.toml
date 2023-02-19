@@ -10,10 +10,13 @@ description = "Support for US Swimming SDIF v3 files"
 name = "sdif"
 readme = "README.md"
 requires-python = ">=3.9"
-version = "23.2.0"
+version = "23.2.0.post0"
 
 [project.optional-dependencies]
 dev = ["black", "isort", "pip-tools", "pyright", "pytest"]
+
+[project.urls]
+repository = "https://github.com/tdsmith/sdif"
 
 [tool.black]
 line-length = 100

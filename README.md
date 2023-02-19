@@ -2,8 +2,10 @@
 
 Parser/writer for US Swimming SDIF files.
 
+[![GitHub forks](https://img.shields.io/github/forks/tdsmith/sdif)](https://github.com/tdsmith/sdif/)
 ![Main workflow](https://github.com/tdsmith/sdif/actions/workflows/main.yml/badge.svg?branch=main)
 [![PyPI](https://img.shields.io/pypi/v/sdif)](https://pypi.org/project/sdif/)
+[![This project uses CalVer](https://img.shields.io/badge/calver-YY.0M.MICRO-22bfda.svg)](https://calver.org/)
 
 
 The format is described in sdifv3.txt,
@@ -59,10 +61,10 @@ with open("my_file.sd3", "rt") as f:
 To write a sd3 file:
 
 ```python
-a0 = models.FileDescription(
-    organization=models.OrganizationCode.masters,
+a0 = sdif.models.FileDescription(
+    organization=sdif.models.OrganizationCode.masters,
     sdif_version="V3",
-    file_code=models.FileCode.vendor_defined,
+    file_code=sdif.models.FileCode.vendor_defined,
     software_name="My Cool Software",
     software_version="v0.0.0",
     contact_name="Joe Bloggs",
@@ -71,7 +73,7 @@ a0 = models.FileDescription(
     submitted_by_lsc=None,
 )
 with open("my_file.sd3", "w") as f:
-    f.write(records.encode_records([a0]))
+    f.write(sdif.records.encode_records([a0]))
 ```
 
 Valid sd3 files must contain at least a FileDescription and a FileTerminator.
@@ -80,3 +82,17 @@ See the SDIF specification for more details.
 ## Other resources
 
 * https://groups.google.com/g/sdif-forum
+
+## License
+
+Copyright 2023 Tim D. Smith
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this package except in compliance with the License.
+There is a copy of the license in the file LICENSE.
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
