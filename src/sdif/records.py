@@ -30,7 +30,7 @@ def encode_value(field: FieldDef, value: Any) -> str:
             field_type = FieldType.int
 
     if field_type == FieldType.usps:
-        assert isinstance(value, str)
+        assert isinstance(value, str), f"{field=} {value=}"
         value = value.upper()
 
     if field_type in (
@@ -48,17 +48,17 @@ def encode_value(field: FieldDef, value: Any) -> str:
         return f"{{: <{field.len}s}}".format(value)
 
     if field_type == FieldType.code:
-        assert isinstance(value, Enum)
+        assert isinstance(value, Enum), f"{field=} {value=}"
         assert len(value.value) <= field.len
         return f"{{: <{field.len}s}}".format(value.value)
 
     if field_type == FieldType.date:
-        assert isinstance(value, date)
+        assert isinstance(value, date), f"{field=} {value=}"
         assert field.len == 8
         return value.strftime("%m%d%Y")
 
     if field_type == FieldType.dec:
-        assert isinstance(value, Decimal)
+        assert isinstance(value, Decimal), f"{field=} {value=}"
         value = str(value)[: field.len]
         return f"{{: >{field.len}s}}".format(value)
 
@@ -71,7 +71,7 @@ def encode_value(field: FieldDef, value: Any) -> str:
         return formatted
 
     if field_type == FieldType.logical:
-        assert isinstance(value, bool)
+        assert isinstance(value, bool), f"{field=} {value=}"
         assert field.len == 1
         if value is True:
             return "T"
@@ -80,7 +80,7 @@ def encode_value(field: FieldDef, value: Any) -> str:
         assert_never(value)
 
     if field_type == FieldType.time:
-        assert isinstance(value, get_args(TimeT))
+        assert isinstance(value, get_args(TimeT)), f"{field=} {value=}"
         if isinstance(value, Time):
             return f"{{: >{field.len}s}}".format(value.format())
         elif isinstance(value, Enum):
