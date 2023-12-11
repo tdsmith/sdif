@@ -474,6 +474,47 @@ class RelayName:
 
 
 @model(frozen=True, kw_only=True)
+class SplitsRecord:
+    """Identify the athletes in an event by name and USS
+    registration number.  Identify the split distance,
+    number of splits and the split times of the swims.
+
+    This record is used to identify the athletes in an event and the
+    split times.  When used, one splits record would be submitted for
+    each event that an athlete entered in a meet.  The athlete name,
+    USS registration code, and split distance are required.
+    A split type code is required to identify the split
+    as an interval or cumulative time.  Ten time fields are provided
+    to record the splits, and multiple records may be used to
+    complete all splits for a long-distance event.
+
+    NOTE:  Splits records must be preceded by at least one D0
+    individual event record or one F0 relay name record.  If this
+    record is missing, there is no way to connect the splits with
+    the swim.
+    """
+
+    identifier: ClassVar[str] = "G0"
+    organization: Optional[OrganizationCode] = spec(3, 1, m2=True)
+    name: str = spec(16, 28, t.name_)
+    ussn: Optional[str] = spec(44, 12, m2=True)
+    sequence: int = spec(56, 1)
+    n_splits: int = spec(57, 2)
+    split_distance: int = spec(59, 4)
+    split_code: str = spec(63, 1)
+    split_time_1: Optional[Time] = spec(64, 8)
+    split_time_2: Optional[Time] = spec(72, 8)
+    split_time_3: Optional[Time] = spec(80, 8)
+    split_time_4: Optional[Time] = spec(88, 8)
+    split_time_5: Optional[Time] = spec(96, 8)
+    split_time_6: Optional[Time] = spec(104, 8)
+    split_time_7: Optional[Time] = spec(112, 8)
+    split_time_8: Optional[Time] = spec(120, 8)
+    split_time_9: Optional[Time] = spec(128, 8)
+    split_time_10: Optional[Time] = spec(136, 8)
+
+
+@model(frozen=True, kw_only=True)
 class FileTerminator:
     """Identify the logical end of file for a file
     transmission.  Record statistics and swim
