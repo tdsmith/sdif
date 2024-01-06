@@ -219,7 +219,7 @@ class Meet:
     identifier: ClassVar[str] = "B1"
     organization: Optional[OrganizationCode] = spec(3, 1)
     meet_name: str = spec(12, 30)
-    meet_address_1: str = spec(42, 22)
+    meet_address_1: Optional[str] = spec(42, 22)
     meet_address_2: Optional[str] = spec(64, 22)
     meet_city: Optional[str] = spec(86, 20, m2=True)
     meet_state: Optional[str] = spec(106, 2, type=t.usps, m2=True)
