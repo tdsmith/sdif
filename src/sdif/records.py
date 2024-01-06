@@ -105,11 +105,11 @@ def encode_records(records: Iterable[fields.SdifModel]) -> str:
     return RECORD_SEP.join(encode_record(i) for i in records)
 
 
-def decode_value(field: FieldDef, value: str) -> Any:
+def decode_value(field: FieldDef, value: str, enforce_required_fields=True) -> Any:
     field_type = field.record_type
     stripped = value.strip()
     if stripped == "":
-        if field.m1:
+        if enforce_required_fields and field.m1:
             raise ValueError(f"Blank value for mandatory field; {field=}")
         return None
     if field_type in (
@@ -163,20 +163,20 @@ def decode_value(field: FieldDef, value: str) -> Any:
 M = TypeVar("M", bound=fields.SdifModel)
 
 
-def decode_record(record: str, record_type: type[M]) -> M:
+def decode_record(record: str, record_type: type[M], enforce_required_fields=True) -> M:
     kwargs = {}
     for field in fields.record_fields(record_type):
         if field.name == "identifier":
             continue
         value = record[field.start - 1 : field.start - 1 + field.len]
-        decoded = decode_value(field, value)
+        decoded = decode_value(field, value, enforce_required_fields)
         kwargs[field.name] = decoded
     return record_type(**kwargs)
 
 
-def decode_records(records: Iterable[str]) -> Iterable[SdifModel]:
+def decode_records(records: Iterable[str], enforce_required_fields=True) -> Iterable[SdifModel]:
     if isinstance(records, str):
         records = records.split(RECORD_SEP)
     for record in records:
         cls = model_meta.REGISTERED_MODELS[record[:2]]
-        yield decode_record(record, cls)
+        yield decode_record(record, cls, enforce_required_fields)
