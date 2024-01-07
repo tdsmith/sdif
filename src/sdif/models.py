@@ -3,8 +3,6 @@ from decimal import Decimal
 from enum import Enum
 from typing import ClassVar, Optional
 
-from typing_extensions import Self
-
 from sdif.fields import FieldType
 from sdif.model_meta import model, spec
 from sdif.time import Time
@@ -110,7 +108,7 @@ class CourseStatusCode(Enum):
 
     short_meters_hytek_nonstandard = "S"
 
-    def normalize(self) -> Self:
+    def normalize(self) -> "CourseStatusCode":
         return {
             self.short_meters_int: self.short_meters,
             self.long_meters_int: self.long_meters,
@@ -451,6 +449,9 @@ class RelayName:
 
     relay_team_name:  one alpha char to concatenate with the team abbreviation in
     record C1 -- creates such names as "Dolphins A"
+
+    prelim_order and swimoff_order are M1 in the spec, but not emitted by
+    Meet Manager (https://github.com/tdsmith/sdif/issues/9).
     """
 
     identifier: ClassVar[str] = "F0"
@@ -463,8 +464,8 @@ class RelayName:
     birthdate: Optional[date] = spec(66, 8, m2=True)
     age_or_class: Optional[str] = spec(74, 2)
     sex: SexCode = spec(76, 1)
-    prelim_order: OrderCode = spec(77, 1)
-    swimoff_order: OrderCode = spec(78, 1)
+    prelim_order: Optional[OrderCode] = spec(77, 1, override_m1=True)
+    swimoff_order: Optional[OrderCode] = spec(78, 1, override_m1=True)
     finals_order: OrderCode = spec(79, 1)
     leg_time: Optional[TimeT] = spec(80, 8)
     course: Optional[CourseStatusCode] = spec(88, 1)

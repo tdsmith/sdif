@@ -57,11 +57,12 @@ def test_round_trip_value(field_type: FieldType, len: int, value: Any, expected:
         len=len,
         m1=False,
         m2=False,
+        optional=True,
         record_type=field_type,
         model_type=type(value),
     )
-    assert encode_value(field_def, value) == expected
-    assert decode_value(field_def, expected) == value
+    assert encode_value(field_def, value, strict=True) == expected
+    assert decode_value(field_def, expected, strict=True) == value
 
 
 @pytest.mark.parametrize(
@@ -83,11 +84,12 @@ def test_round_trip_ish_value(
         len=len,
         m1=False,
         m2=False,
+        optional=True,
         record_type=field_type,
         model_type=type(value),
     )
-    assert encode_value(field_def, value) == expected
-    assert decode_value(field_def, expected) == roundtrip
+    assert encode_value(field_def, value, strict=True) == expected
+    assert decode_value(field_def, expected, strict=True) == roundtrip
 
 
 def test_round_trip_record():
@@ -113,3 +115,34 @@ def test_round_trip_hytek_signon():
     (record,) = decode_records([orig])
     serialized = encode_records([record])
     assert orig == serialized
+
+
+def test_round_trip_m1_optional_fields():
+    m = models.RelayName(
+        organization=None,
+        team_code="ABC",
+        relay_team_name=None,
+        swimmer_name="Joe Bloggs",
+        uss_number=None,
+        citizen=None,
+        birthdate=None,
+        age_or_class=None,
+        sex=models.SexCode.male,
+        prelim_order=None,
+        swimoff_order=None,
+        finals_order=models.OrderCode.alternate,
+        leg_time=None,
+        course=None,
+        takeoff_time=None,
+        uss_number_new=None,
+        preferred_first_name=None,
+    )
+    serialized = encode_records([m])
+    (recovered,) = decode_records(serialized)
+    assert m == recovered
+
+    with pytest.raises(ValueError):
+        encode_records([m], strict=True)
+
+    with pytest.raises(ValueError):
+        list(decode_records(serialized, strict=True))

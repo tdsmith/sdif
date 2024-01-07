@@ -7,8 +7,24 @@ from sdif.fields import FieldMetadata, FieldType, SdifModel
 REGISTERED_MODELS: dict[str, type[SdifModel]] = {}
 
 
-def spec(start: int, len: int, type: Optional[FieldType] = None, m2: bool = False):
-    return attr.field(metadata=dict(sdif=FieldMetadata(start=start, len=len, type=type, m2=m2)))
+def spec(
+    start: int,
+    len: int,
+    type: Optional[FieldType] = None,
+    m2: bool = False,
+    override_m1: Optional[bool] = None,
+):
+    return attr.field(
+        metadata=dict(
+            sdif=FieldMetadata(
+                start=start,
+                len=len,
+                type=type,
+                m2=m2,
+                override_m1=override_m1,
+            )
+        )
+    )
 
 
 if TYPE_CHECKING:
