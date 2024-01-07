@@ -23,7 +23,10 @@ from sdif.time import Time, TimeT
 @runtime_checkable
 class SdifModel(Protocol):
     # __attrs_attrs__: ClassVar  # pyright can't detect this without the benefit of plugins
-    identifier: ClassVar[str]
+
+    @property
+    def identifier(self) -> str:
+        ...
 
 
 class FieldType(Enum):

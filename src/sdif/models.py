@@ -3,8 +3,6 @@ from decimal import Decimal
 from enum import Enum
 from typing import ClassVar, Optional
 
-from typing_extensions import Self
-
 from sdif.fields import FieldType
 from sdif.model_meta import model, spec
 from sdif.time import Time
@@ -110,7 +108,7 @@ class CourseStatusCode(Enum):
 
     short_meters_hytek_nonstandard = "S"
 
-    def normalize(self) -> Self:
+    def normalize(self) -> "CourseStatusCode":
         return {
             self.short_meters_int: self.short_meters,
             self.long_meters_int: self.long_meters,
