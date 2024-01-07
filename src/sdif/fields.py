@@ -48,6 +48,7 @@ class FieldMetadata:
     len: int
     type: Optional[FieldType]
     m2: bool
+    override_m1: Optional[bool]
 
 
 def infer_type(attr_type: type, field_meta: FieldMetadata) -> FieldType:
@@ -77,11 +78,22 @@ def infer_type(attr_type: type, field_meta: FieldMetadata) -> FieldType:
 
 @attr.define(frozen=True)
 class FieldDef:
+    """
+    m1 describes whether the field is marked m1 in the spec.
+
+    optional describes whether the models can tolerate a None value.
+    In strict=True mode, missing values are not tolerated where m1=True.
+
+    In strict=False mode, missing values are tolerated where optional=True, even
+    if m1=True.
+    """
+
     name: str
     start: int
     len: int
     m1: bool
     m2: bool
+    optional: bool
     record_type: FieldType
     model_type: type
 
@@ -95,6 +107,7 @@ def record_fields(cls: type[SdifModel]) -> Iterator[FieldDef]:
         len=2,
         m1=True,
         m2=False,
+        optional=False,
         record_type=FieldType.const,
         model_type=str,
     )
@@ -106,7 +119,9 @@ def record_fields(cls: type[SdifModel]) -> Iterator[FieldDef]:
         meta = field.metadata["sdif"]
         assert isinstance(meta, FieldMetadata)
 
-        if is_optional_type(field.type):
+        field_is_optional = is_optional_type(field.type)
+
+        if field_is_optional:
             args: list[type] = [arg for arg in get_args(field.type) if arg != type(None)]
             if len(args) == 1:
                 (attr_type,) = args
@@ -116,13 +131,17 @@ def record_fields(cls: type[SdifModel]) -> Iterator[FieldDef]:
             attr_type = field.type
         attr_type = cast(type, attr_type)
 
-        m1 = not is_optional_type(field.type)
+        m1 = not field_is_optional
+        if meta.override_m1 is not None:
+            m1 = meta.override_m1
+
         yield FieldDef(
             name=field.name,
             start=meta.start,
             len=meta.len,
             m1=m1,
             m2=meta.m2,
+            optional=field_is_optional,
             record_type=infer_type(attr_type, meta),
             model_type=attr_type,
         )

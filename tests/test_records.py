@@ -57,11 +57,12 @@ def test_round_trip_value(field_type: FieldType, len: int, value: Any, expected:
         len=len,
         m1=False,
         m2=False,
+        optional=True,
         record_type=field_type,
         model_type=type(value),
     )
-    assert encode_value(field_def, value) == expected
-    assert decode_value(field_def, expected) == value
+    assert encode_value(field_def, value, strict=True) == expected
+    assert decode_value(field_def, expected, strict=True) == value
 
 
 @pytest.mark.parametrize(
@@ -83,11 +84,12 @@ def test_round_trip_ish_value(
         len=len,
         m1=False,
         m2=False,
+        optional=True,
         record_type=field_type,
         model_type=type(value),
     )
-    assert encode_value(field_def, value) == expected
-    assert decode_value(field_def, expected) == roundtrip
+    assert encode_value(field_def, value, strict=True) == expected
+    assert decode_value(field_def, expected, strict=True) == roundtrip
 
 
 def test_round_trip_record():
