@@ -347,7 +347,7 @@ class IndividualEvent:
     # points_scored_finals (above) will contain " 4.", and
     # centipoints_scored_finals will contain "50".  This field is in the area
     # of the record marked as "future use" in sdifv3f.txt.
-    centipoints_scored_finals: Optional[int] = sdif.model_meta.spec(151, 2)
+    centipoints_scored_finals: Optional[int] = spec(151, 2)
 
 @model(frozen=True, kw_only=True)
 class IndividualInfo:
