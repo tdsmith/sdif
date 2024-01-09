@@ -342,6 +342,12 @@ class IndividualEvent:
     event_time_class: Optional[str] = spec(143, 2)
     flight_status: Optional[str] = spec(145, 1)
 
+    # centipoints_scored_finals is used by Meet Manager to store the hundredths
+    # of points scored.  If the points were 4.5 (due to a tie), then
+    # points_scored_finals (above) will contain " 4.", and
+    # centipoints_scored_finals will contain "50".  This field is in the area
+    # of the record marked as "future use" in sdifv3f.txt.
+    centipoints_scored_finals: Optional[int] = spec(151, 2)
 
 @model(frozen=True, kw_only=True)
 class IndividualInfo:
