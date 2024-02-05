@@ -408,7 +408,7 @@ class RelayEvent:
     stroke: StrokeCode = spec(26, 1)
     event_number: Optional[str] = spec(27, 4)
     event_age: str = spec(31, 4)
-    total_athlete_age: int = spec(35, 3)
+    total_athlete_age: Optional[int] = spec(35, 3, override_m1=True)
     swim_date: Optional[date] = spec(38, 8)
     seed_time: Optional[TimeT] = spec(46, 8)
     seed_course: Optional[CourseStatusCode] = spec(54, 1)
