@@ -10,7 +10,7 @@ description = "Support for US Swimming SDIF v3 files"
 name = "sdif"
 readme = "README.md"
 requires-python = ">=3.9"
-version = "24.1.1"
+version = "24.2.1post0"
 
 [project.optional-dependencies]
 dev = ["black", "isort", "pip-tools", "pyright", "pytest"]
