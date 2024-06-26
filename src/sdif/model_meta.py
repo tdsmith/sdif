@@ -94,10 +94,15 @@ def model(*args, **kwargs):
     if not args:
         return inner
 
+    try:
+        registry = kwargs.pop('registry')
+    except KeyError:
+        registry = REGISTERED_MODELS
+
     model_cls = attr.define(*args, **kwargs)
     validate_model(model_cls)
-    assert model_cls.identifier not in REGISTERED_MODELS
-    REGISTERED_MODELS[model_cls.identifier] = model_cls
+    assert model_cls.identifier not in registry
+    registry[model_cls.identifier] = model_cls
     return model_cls
 
 

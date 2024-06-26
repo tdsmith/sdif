@@ -174,9 +174,9 @@ def decode_record(record: str, record_type: type[M], strict: bool) -> M:
     return record_type(**kwargs)
 
 
-def decode_records(records: Iterable[str], strict: bool = False) -> Iterable[SdifModel]:
+def decode_records(records: Iterable[str], strict: bool = False, registry: dict[str, type[SdifModel]] = model_meta.REGISTERED_MODELS) -> Iterable[SdifModel]:
     if isinstance(records, str):
         records = records.split(RECORD_SEP)
     for record in records:
-        cls = model_meta.REGISTERED_MODELS[record[:2]]
+        cls = registry[record[:2]]
         yield decode_record(record, cls, strict)
